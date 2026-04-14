@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width"/>
+        <title>Rock Paper Scissors</title>
+        <link href="../css/style.css" rel="stylesheet" type="text/css"/>
+        <link href="../images/purina_favicon.jpg" rel="icon" type="image/png"/>
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                <input type="checkbox" id="menu-toggle"/>
+                <label id="trigger" for="menu-toggle"></label>
+                <label id="burger" for="menu-toggle"></label>
+                <ul id="menu">
+                    <li><a href="">Home</a></li>
+                    <li><a href="https://shop.hasbro.com/en-ca" target="_blank">Store</a></li>
+                    <li><a href="https://corporate.hasbro.com/en-us" target="_blank">About</a></li>
+                    <li><a href="https://newsroom.hasbro.com/contact-us" target="_blank">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <h1 id="Title">
+                ROCK PAPER SCISSORS
+            </h1>
+        </header>
+
+        <main>
+            <h2>Hi <span id="username"></span>!</h2>
+
+            <div id="roundCounter">Round: Not Started</div>
+
+            <div id="scoreDisplay">Score -> You: 0 | CPU: 0 | Draws: 0</div>
+            
+            <div id="gameUI">
+                <div id="messageBox">
+                    <p id="messageText"></p>
+                </div>
+
+                <div id="inputArea" class="hidden">
+                    <input type="text" id="userInput" placeholder="Type R, P, or S">
+                    <button id="submitChoice">Submit</button>
+                </div>
+
+                <div id="confirmArea" class="hidden">
+                    <p id="confirmText"></p>
+                    <button id="yesBtn">Yes</button>
+                    <button id="noBtn">No</button>
+                </div>
+
+                <div id="endRoundMessage" class="hidden">
+                    <p>Thanks for playing Hasintbro RPS! Scores have been reset.</p>
+                    <button id="playAgainBtn">Play Again</button>
+                </div>
+
+                <div id="introStepFourUI" class="hidden">
+                    <h2>Let's start!</h2>
+                    <button id="playBtn">PLAY</button>
+                </div>
+            </div>            
+            <div id="graph-container">
+                <canvas id="graph" width="600" height="400"></canvas>
+            </div>
+ 
+        </main>
+         
+
+        <footer>
+            <marquee scrollamount="25">
+                <p class="homePageText" id="authorCredits"> 
+                    Made with Amelie's laptop by Amelie, Isaac, and Leo
+                </p>
+            </marquee>
+        </footer>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="../js/script.js" defer></script>
+
+    </body>
+</html>
