@@ -798,8 +798,23 @@ function drawSineGraph() {
 // ============================================================
 
 
-initializeEventListeners();
-initializeGame();
+/*
+Summary: Main program entry point. Called when DOM is ready.
+@param  none
+@return None (Void)
+*/
+function runProgram() {
+    initializeEventListeners();
+    initializeGame();
+} // END of runProgram
+
+
+document.addEventListener('DOMContentLoaded', () => 
+    {
+        setTimeout(() => {
+            runProgram();
+        }, 100); // slight delay to ensure DOM is fully ready
+    });
 // RPS is a Rock Paper Scissors game that uses Math.sin on unit-circle angles to
 // determine each round's winner, with a live Canvas sine-wave graph and round tracking.
 
