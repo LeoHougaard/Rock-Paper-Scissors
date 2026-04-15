@@ -396,6 +396,7 @@ Summary: Initializes round variables and sends control to GET_CHOICE.
 function startRoundSession() {
     currentRoundNumber = 1;
     refreshRoundDisplay();
+    refreshScoreDisplay();
     gameManager('GET_CHOICE');
 } // END of startRoundSession
 
@@ -633,7 +634,7 @@ Summary: Updates the score display element in the UI.
 */
 function refreshScoreDisplay() {
     scoreDisplayElement.innerText =
-        `You: ${gameScoreObject.playerWin}  |  CPU: ${gameScoreObject.computerWin}  |  Draws: ${gameScoreObject.gameDraw}`;
+        `Score -> You: ${gameScoreObject.playerWin}  |  CPU: ${gameScoreObject.computerWin}  |  Draws: ${gameScoreObject.gameDraw}`;
 } // END of refreshScoreDisplay
 
 

@@ -292,8 +292,8 @@ button:active {
 canvas {
   margin-top: 20px;
   max-width: 100%; /* responsive */
-  width: 700px;
-  height: auto;
+  width: 600px;
+  height: 400px;
   background-color: #bfabca;
 }
 
