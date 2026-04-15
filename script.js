@@ -188,11 +188,19 @@ function gameManager(newGameState) {
         runCurrentIntroStep();
 
     } else if (newGameState === 'ADVANCE_INTRO') {
-        currentIntroStepIndex++; // increment to move forward in intro
+        if (currentIntroStepIndex < introStepsArray.length - 1) {
+            currentIntroStepIndex++; // increment to move forward in intro
+        } else {
+            console.warn('ADVANCE_INTRO ignored: already at last intro step.');
+        }
         runCurrentIntroStep();
 
     } else if (newGameState === 'BACK_INTRO') {
-        currentIntroStepIndex--; // decrement to go back one step
+        if (currentIntroStepIndex > 0) {
+            currentIntroStepIndex--; // decrement to go back one step
+        } else {
+            console.warn('BACK_INTRO ignored: already at first intro step.');
+        }
         runCurrentIntroStep();
 
     } else if (newGameState === 'START_ROUND') {
@@ -325,7 +333,24 @@ Summary: Calls the intro function at the current step index.
 @return None (Void)
 */
 function runCurrentIntroStep() {
-    introStepsArray[currentIntroStepIndex]();
+    if ((currentIntroStepIndex < 0) || (currentIntroStepIndex >= introStepsArray.length)) {
+        console.warn(
+            `Invalid intro step index ${currentIntroStepIndex}; clamping to valid range.`
+        );
+        currentIntroStepIndex = Math.max(0, Math.min(currentIntroStepIndex, introStepsArray.length - 1));
+    }
+
+    const currentStepFn = introStepsArray[currentIntroStepIndex];
+
+    if (typeof currentStepFn !== 'function') {
+        console.error(
+            `Intro step at index ${currentIntroStepIndex} is not callable.`,
+            currentStepFn
+        );
+        return;
+    }
+
+    currentStepFn();
 } // END of runCurrentIntroStep
 
 
@@ -378,10 +403,9 @@ Summary: Intro Step 1 — Displays the personalised welcome message.
 @return None (Void)
 */
 function displayWelcomeStep() {
-    introStepFourElement.classList.add('hidden');
-    displayMessage(`Welcome to Hasintbro Rock Paper Scissors, ${capitalizedUserName}!\n\nThis is not your ordinary RPS — every match becomes mathematics.`);
-    appendIntroNavButtons();
+    alert(`Welcome to Hasintbro Rock Paper Scissors, ${capitalizedUserName}!\n\nThis is not your ordinary RPS — every match becomes mathematics.`);
     console.log(`Hi ${capitalizedUserName}! — Welcome step shown.`);
+    gameManager('ADVANCE_INTRO');
 } // END of displayWelcomeStep
 
 
@@ -391,15 +415,15 @@ Summary: Intro Step 2 — Displays background information about the game concept
 @return None (Void)
 */
 function displayIntroStep() {
-    displayMessage(
+    alert(
         `Rock Paper Scissors is an ancient game — but at Hasintbro, we believe it needs to evolve.\n\n` +
         `We mapped each choice to an angle on the unit circle. ` +
         `Math.sin(cpuAngle − yourAngle) decides every winner.\n\n` +
         `Welcome to sin(rock, paper, scissors).`
     );
-    appendIntroNavButtons();
     console.log('%cWelcome to sin(rock, paper, scissors)', 'color: turquoise; font-size: 22px');
     console.log('Every game becomes math. The graph below updates after each round.');
+    gameManager('ADVANCE_INTRO');
 } // END of displayIntroStep
 
 
@@ -409,28 +433,28 @@ Summary: Intro Step 3 — Explains how to play the game step by step.
 @return None (Void)
 */
 function displayExplanationStep() {
-    displayMessage(
+    alert(
         `How to play:\n\n` +
-        `  1. Type R, P, or S in the input box and press Submit.\n` +
-        `  2. Confirm your choice with the Yes button.\n` +
+        `  1. Type R, P, or S when prompted.\n` +
+        `  2. Confirm your choice with OK or Cancel.\n` +
         `  3. See who won — then choose to continue or end the round.\n\n` +
         `The sine wave graph updates after every play.\n` +
         `Green line = you win  |  Red = CPU wins  |  Grey = draw`
     );
-    appendIntroNavButtons();
     console.log('%cHow to Play', 'color: turquoise; font-size: 18px');
     console.log('1. Type R, P, or S   2. Confirm your pick   3. See the result on the graph');
+    gameManager('ADVANCE_INTRO');
 } // END of displayExplanationStep
 
 
 /*
-Summary: Intro Step 4 — Hides the message box and reveals the Play button.
+Summary: Intro Step 4 — Starts the game automatically.
 @param  none
 @return None (Void)
 */
 function displayPlayButtonStep() {
-    messageBoxElement.classList.add('hidden');
-    introStepFourElement.classList.remove('hidden');
+    alert('Ready to play? Let\'s start!');
+    gameManager('START_ROUND');
 } // END of displayPlayButtonStep
 
 
@@ -497,16 +521,13 @@ function startRoundSession() {
 
 
 /*
-Summary: Clears the input field and reveals the text input area.
+Summary: Prompts the user for their choice (R, P, or S).
 @param  none
 @return None (Void)
 */
 function displayChoiceInput() {
-    messageBoxElement.classList.add('hidden');
-    confirmAreaElement.classList.add('hidden');
-    userInputElement.value = '';
-    inputAreaElement.classList.remove('hidden');
-    userInputElement.focus();
+    playerChoiceRaw = prompt('Enter your choice (R for Rock, P for Paper, S for Scissors):');
+    processPlayerChoice();
 } // END of displayChoiceInput
 
 
@@ -553,25 +574,18 @@ function processPlayerChoice() {
 
 
 /*
-Summary: Shows the confirm dialog for the player's chosen move.
-         Stores YES/NO callbacks so the buttons know where to route.
+Summary: Confirms the player's chosen move via confirm dialog.
 @param  none
 @return None (Void)
 */
 function displayChoiceConfirmation() {
+    const userConfirmed = confirm(`You chose ${playerChoiceWord}. Confirm?`);
 
-    confirmTextElement.innerText = `You chose ${playerChoiceWord}. Confirm?`;
-    confirmAreaElement.classList.remove('hidden');
-    messageBoxElement.classList.add('hidden');
-
-    // Store callbacks — picked up by the yes/no event listeners
-    pendingConfirmYesCallback = function () {
+    if (userConfirmed) {
         gameManager('COMPUTE_RESULT');
-    }; // END of yes callback assignment
-
-    pendingConfirmNoCallback = function () {
+    } else {
         gameManager('GET_CHOICE');
-    }; // END of no callback assignment
+    } // END of confirmation check
 
 } // END of displayChoiceConfirmation
 
@@ -638,33 +652,29 @@ function evaluateWinner() {
 
 
 /*
-Summary: Shows the "continue round?" confirm dialog.
+Summary: Asks the player if they want to continue the round.
          YES increments the round and routes to GET_CHOICE.
          NO routes to END_ROUND.
 @param  none
 @return None (Void)
 */
 function askToContinueRound() {
+    const userContinues = confirm('Do you want to continue playing?');
 
-    confirmTextElement.innerText = 'Do you want to continue the round?';
-    confirmAreaElement.classList.remove('hidden');
-
-    pendingConfirmYesCallback = function () {
+    if (userContinues) {
         currentRoundNumber++;
         refreshRoundDisplay();
         gameManager('GET_CHOICE');
-    }; // END of continue yes callback
-
-    pendingConfirmNoCallback = function () {
+    } else {
         gameManager('END_ROUND');
-    }; // END of continue no callback
+    } // END of continue check
 
 } // END of askToContinueRound
 
 
 /*
-Summary: Ends the current round. Logs the final score, shows the final score
-         in the overlay, resets all game variables, and reveals the play-again button.
+Summary: Ends the current round. Shows final score, resets variables,
+         and asks if the player wants to play again.
 @param  none
 @return None (Void)
 */
@@ -672,8 +682,8 @@ function endRound() {
 
     logThankYou();
 
-    finalScoreSummaryElement.innerText =
-        `Final Score — You: ${gameScoreObject.playerWin} | CPU: ${gameScoreObject.computerWin} | Draws: ${gameScoreObject.gameDraw}`;
+    const finalScore = `Final Score — You: ${gameScoreObject.playerWin} | CPU: ${gameScoreObject.computerWin} | Draws: ${gameScoreObject.gameDraw}`;
+    alert(`Thanks for playing Hasintbro RPS, ${capitalizedUserName}!\n\n${finalScore}`);
 
     // Reset score object
     gameScoreObject = { playerWin: 0, computerWin: 0, gameDraw: 0 };
@@ -691,13 +701,13 @@ function endRound() {
     currentRoundNumber = 0;
     refreshRoundDisplay();
 
-    // Hide active UI areas
-    inputAreaElement.classList.add('hidden');
-    messageBoxElement.classList.add('hidden');
-    confirmAreaElement.classList.add('hidden');
-
-    // Show end-of-round overlay
-    endRoundMsgElement.classList.remove('hidden');
+    // Ask if player wants to play again
+    const playAgain = confirm('Would you like to play again?');
+    if (playAgain) {
+        gameManager('START_ROUND');
+    } else {
+        alert('Thanks for playing! Goodbye!');
+    } // END of play again check
 
 } // END of endRound
 
@@ -708,25 +718,13 @@ function endRound() {
 
 
 /*
-Summary: Reveals the message box with the provided text.
-         Hides confirm and input areas (unless keepInputVisible is true).
-@param  messageText      {string}  — the text to display in the message box
-@param  keepInputVisible {boolean} — if true, the input area stays visible
+Summary: Displays a message via alert dialog.
+@param  messageText      {string}  — the text to display
+@param  keepInputVisible {boolean} — unused (kept for compatibility)
 @return None (Void)
 */
 function displayMessage(messageText, keepInputVisible) {
-
-    const shouldKeepInput = (keepInputVisible === true);
-
-    confirmAreaElement.classList.add('hidden');
-
-    if (!shouldKeepInput) {
-        inputAreaElement.classList.add('hidden');
-    } // END of if input should be hidden
-
-    messageTextElement.innerText = messageText;
-    messageBoxElement.classList.remove('hidden');
-
+    alert(messageText);
 } // END of displayMessage
 
 

@@ -34,7 +34,7 @@ html, body {
     color: white;
     font-weight: bold;
     background-color: #dbe3f0; 
-    background-image: url('../images/flowers.jpg');
+    background-image: url('flowers.jpg');
     background-size: cover; 
     background-position: center; 
     background-repeat: no-repeat; /* prevents tiling */;
