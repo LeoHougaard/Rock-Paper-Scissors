@@ -134,13 +134,13 @@ const rpsEmojiMap = {
 
 
 // --- DOM Element References ---
-const roundCounterElement      = document.getElementById('roundCounter');
-const scoreDisplayElement      = document.getElementById('scoreDisplay');
-const usernameDisplayElement   = document.getElementById('username');
-const canvasElement            = document.getElementById('graph');
-const canvasContext            = canvasElement.getContext('2d');
-const canvasWidth              = canvasElement.width;
-const canvasHeight             = canvasElement.height;
+let roundCounterElement      = null;
+let scoreDisplayElement      = null;
+let usernameDisplayElement   = null;
+let canvasElement            = null;
+let canvasContext            = null;
+let canvasWidth              = null;
+let canvasHeight             = null;
 const graphAmplitudeValue      = 100;
 
 
@@ -217,6 +217,23 @@ function gameManager(newGameState) {
 // ============================================================
 // INITIALIZATION
 // ============================================================
+
+
+/*
+Summary: Retrieves all DOM element references after DOM is fully loaded.
+         Called from runProgram() to ensure elements are available.
+@param  none
+@return None (Void)
+*/
+function initializeDOMElements() {
+    roundCounterElement    = document.getElementById('roundCounter');
+    scoreDisplayElement    = document.getElementById('scoreDisplay');
+    usernameDisplayElement = document.getElementById('username');
+    canvasElement          = document.getElementById('graph');
+    canvasContext          = canvasElement.getContext('2d');
+    canvasWidth            = canvasElement.width;
+    canvasHeight           = canvasElement.height;
+} // END of initializeDOMElements
 
 
 /*
@@ -804,6 +821,7 @@ Summary: Main program entry point. Called when DOM is ready.
 @return None (Void)
 */
 function runProgram() {
+    initializeDOMElements();
     initializeEventListeners();
     initializeGame();
 } // END of runProgram
