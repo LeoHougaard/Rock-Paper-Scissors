@@ -114,9 +114,7 @@ let gameScoreObject = {
 let currentRoundNumber = 0; // increments each time the player continues
 
 
-// --- Pending Confirm Callbacks ---
-let pendingConfirmYesCallback = null; // stored function for YES button
-let pendingConfirmNoCallback  = null; // stored function for NO button
+
 
 
 // --- RPS Angle Map ---
@@ -135,27 +133,15 @@ const rpsEmojiMap = {
 }; // END of rpsEmojiMap
 
 
-// --- Canvas Variables ---
-const canvasElement       = document.getElementById('graph');
-const canvasContext       = canvasElement.getContext('2d');
-const canvasWidth         = canvasElement.width;
-const canvasHeight        = canvasElement.height;
-const graphAmplitudeValue = 100;
-
-
 // --- DOM Element References ---
-const messageBoxElement        = document.getElementById('messageBox');
-const messageTextElement       = document.getElementById('messageText');
-const inputAreaElement         = document.getElementById('inputArea');
-const userInputElement         = document.getElementById('userInput');
-const confirmAreaElement       = document.getElementById('confirmArea');
-const confirmTextElement       = document.getElementById('confirmText');
 const roundCounterElement      = document.getElementById('roundCounter');
 const scoreDisplayElement      = document.getElementById('scoreDisplay');
-const introStepFourElement     = document.getElementById('introStepFourUI');
-const endRoundMsgElement       = document.getElementById('endRoundMessage');
-const finalScoreSummaryElement = document.getElementById('finalScoreSummary');
 const usernameDisplayElement   = document.getElementById('username');
+const canvasElement            = document.getElementById('graph');
+const canvasContext            = canvasElement.getContext('2d');
+const canvasWidth              = canvasElement.width;
+const canvasHeight             = canvasElement.height;
+const graphAmplitudeValue      = 100;
 
 
 // --- Intro Steps Array (function references — hoisted, safe to reference here) ---
@@ -247,78 +233,14 @@ function initializeGame() {
 
 
 /*
-Summary: Sets up ALL DOM event listeners in one place.
-         Called once when the script loads (defer guarantees DOM is ready).
-         No event listeners are set inside other functions.
+Summary: Console-based game flow doesn't require event listeners.
+         Game runs via prompt(), confirm(), and alert() dialogs.
 @param  none
 @return None (Void)
 */
 function initializeEventListeners() {
-
-    // Submit choice button — reads input field and routes to choice processing
-    document.getElementById('submitChoice').addEventListener('click', function () {
-        playerChoiceRaw = userInputElement.value;
-        inputAreaElement.classList.add('hidden');
-        processPlayerChoice();
-    }); // END of submitChoice listener
-
-
-    // Yes button — runs the stored YES callback if one exists
-    document.getElementById('yesBtn').addEventListener('click', function () {
-        confirmAreaElement.classList.add('hidden');
-
-        if (pendingConfirmYesCallback !== null) {
-            const yesCallbackToRun    = pendingConfirmYesCallback;
-            pendingConfirmYesCallback = null;
-            pendingConfirmNoCallback  = null;
-            yesCallbackToRun();
-        } // END of if yes callback exists
-
-    }); // END of yesBtn listener
-
-
-    // No button — runs the stored NO callback if one exists
-    document.getElementById('noBtn').addEventListener('click', function () {
-        confirmAreaElement.classList.add('hidden');
-
-        if (pendingConfirmNoCallback !== null) {
-            const noCallbackToRun     = pendingConfirmNoCallback;
-            pendingConfirmYesCallback = null;
-            pendingConfirmNoCallback  = null;
-            noCallbackToRun();
-        } // END of if no callback exists
-
-    }); // END of noBtn listener
-
-
-    // Play button — hides intro UI and starts the first round
-    document.getElementById('playBtn').addEventListener('click', function () {
-        introStepFourElement.classList.add('hidden');
-        messageBoxElement.classList.add('hidden');
-        gameManager('START_ROUND');
-    }); // END of playBtn listener
-
-
-    // Play again button — hides end overlay and restarts
-    document.getElementById('playAgainBtn').addEventListener('click', function () {
-        endRoundMsgElement.classList.add('hidden');
-        gameManager('START_ROUND');
-    }); // END of playAgainBtn listener
-
-
-    // Event delegation for dynamic Next / Back buttons inside messageBox
-    messageBoxElement.addEventListener('click', function (clickEvent) {
-
-        if (clickEvent.target.id === 'nextBtn') {
-            gameManager('ADVANCE_INTRO');
-        } // END of if next button clicked
-
-        if (clickEvent.target.id === 'backBtn') {
-            gameManager('BACK_INTRO');
-        } // END of if back button clicked
-
-    }); // END of messageBox delegate listener
-
+    // All game interaction now handled through prompts and alerts
+    // Button listeners not needed for console-based gameplay
 } // END of initializeEventListeners
 
 
@@ -353,48 +275,6 @@ function runCurrentIntroStep() {
     currentStepFn();
 } // END of runCurrentIntroStep
 
-
-/*
-Summary: Appends Next and/or Back navigation buttons to the message box.
-         Removes any existing buttons before adding new ones.
-@param  none
-@return None (Void)
-*/
-function appendIntroNavButtons() {
-
-    const existingNextButton = document.getElementById('nextBtn');
-    const existingBackButton = document.getElementById('backBtn');
-
-    if (existingNextButton !== null) {
-        existingNextButton.remove();
-    } // END of if existing next button
-
-    if (existingBackButton !== null) {
-        existingBackButton.remove();
-    } // END of if existing back button
-
-    // Add Back button if not on the first step
-    if (currentIntroStepIndex > 0) {
-        const backNavButton       = document.createElement('button');
-        backNavButton.id          = 'backBtn';
-        backNavButton.textContent = '← Back';
-        backNavButton.className   = 'btn btn-secondary';
-        backNavButton.style.marginTop   = '0.75rem';
-        backNavButton.style.marginRight = '0.5rem';
-        messageBoxElement.appendChild(backNavButton);
-    } // END of if not on the first step
-
-    // Add Next button if not on the last step
-    if (currentIntroStepIndex < introStepsArray.length - 1) {
-        const nextNavButton       = document.createElement('button');
-        nextNavButton.id          = 'nextBtn';
-        nextNavButton.textContent = 'Next →';
-        nextNavButton.className   = 'btn btn-primary';
-        nextNavButton.style.marginTop = '0.75rem';
-        messageBoxElement.appendChild(nextNavButton);
-    } // END of if not on the last step
-
-} // END of appendIntroNavButtons
 
 
 /*
