@@ -1,891 +1,942 @@
+/*
 
-/* 
+    Title: RPS
+    Program Summary: Rock Paper Scissors evolved using trigonometry. Each choice
+                     (rock / paper / scissors) maps to a fixed angle on the unit
+                     circle. Math.sin(cpuAngle - playerAngle) determines the winner
+                     of every round. A Canvas sine-wave graph visualizes both choices
+                     after each play. Rounds and scores are tracked until the player
+                     chooses to end the session.
 
-	Title: RPS
-	Program Summary: This is rock paper scissors but more complicated...
-	
-	Important (KEY) Program Elements Used: 
+    Important (KEY) Program Elements Used:
+        prompt(), alert(), and confirm()
+        functions
+        function callback
+        .slice()
+        .trim()
+        .toLowerCase()
+        while loop
+        Math.sin()
+        Math.random()
+        Math.floor()
+        ctx / Canvas API (graph)
+        increment (++)
+        decrement (--)
+        arrays
+        comparison operators (!, ===, ||, &&)
+        DOM & event listeners
+        innerHTML
+        function scope
+        global scope
+        .appendChild()
+        ternary
 
-  prompt(), alert(), and confirm()
-  functions
-  function callback
-  .slice()
-  .trim()
-  .toLowerCase()
-  while loop
-  Math.sin()
-  Math.random()
-  Math.floor()
-  ctx/graph (Canvas API)
-  increment (++)
-  decrement (--)
-  arrays
-  comparison Operators (!, ===, ||, &&)
-  DOM & event listeners
-  inner html
-  function scope
-  global scope
-  .appendChild()
-  ternary
-
-	Authors (Teammates/Owners/Project Roles): Amelie (Ruohan) Shen, Leo Hougaard, and Isaac Leon Cauldern
-	
-	Version (Project Iteration): 4.0
-	
-	Date (Last Edited): 02/20/2026
+    Authors: Amelie (Ruohan) Shen, Leo Hougaard, Isaac Leon Cauldern
+    Version: 4.0
+    Date (Last Edited): 02/20/2026
 
 */
 
 
+// ============================================================
+// GLOBAL VARIABLE DECLARATIONS
+// ============================================================
 
 
-
-// Start of Functions           
-
-
-
-
-
-/*
-Summary: The play rock paper scissors function 
-@parms: none
-@return: None (Void) - This is the main entry point that resets the current intro step and plays the next button function
-*/
-function playRPS() {
-  currentIntroStep = 0; // reset step index
-  showNextIntroStep();
-} //End of the play rock paper scissors function
-
-
-
-
-
-/*
-Summary: The rock paper scissors function
-@parms: none
-@return: None (Void) - only runs ask for choice
-*/
-function RPSGame() {
-  askForChoice();
-} // End of rock paper scissors game function
-
-
-
-
-
-/*
-Summary: The show next button in each intro step function
-@parms: introsteps
-@return: none - changes next button and increments currentIntroStep
-*/
-function showNextIntroStep() {
-  // function var
-  const existingNextBtn = document.getElementById("nextBtn");
-  const nextBtn = document.createElement("button");
-
-
-
-  introSteps[currentIntroStep](); // Run current step
-
-  if (existingNextBtn) existingNextBtn.remove(); // Remove old Next button
-
-  // Only add "Next" button if not the last step
-  if (currentIntroStep < introSteps.length - 1) {
-    nextBtn.id = "nextBtn";
-    nextBtn.textContent = "Next";
-    nextBtn.addEventListener("click", () => {
-      currentIntroStep++;
-      showNextIntroStep();
-    });
-    msgBox.appendChild(nextBtn); // append inside messageBox
-  }
-} //End of show intro step function
-
-
-
-
-
-/*
-Summary: manages the transition to the fourth step of an introductory sequence
-@parms: none
-@return: none - runs startRoundSession()
-*/
-function introStepFour() {
-    msgBox.classList.add("hidden"); // hide explanation from prev step
-    playUI.classList.remove("hidden"); // remove hidden class 
-
-    // Play button click
-    document.getElementById("playBtn").onclick = () => {
-        playUI.style.display = "none"; // Hide the intro UI
-        startRoundSession();
-    };
-} //End of intro step four function
-
-
-
-
-
-/*
-Summary: The title function
-@parms: ASCIITitle
-@return: None - Outputs the ASCII title to the console.
-*/
-function titleRPS() {
-  console.log(ASCIITitle);
-}// End of the title function
-
-
-
-
-
-/*
-Summary: The welcome rock paper scissors function
-@parms: userNameCapitalized
-@return: None - Triggers alerts and logs to greet the user.
-*/
-function welcomeRPS() {
-  userNameCollector();
-  showMessage(`Welcome to the Hasintbro Rock Paper Scissors.`);
-  console.log(`Hi ${userNameCapitalized}!`);
-  titleRPS();
-} //End of welcome rock paper scissors function
-
-
-
-
-
-/*
-Summary: Intro rock paper scissors function
-@parms: none
-@return: None - Logs stylized introduction text to the console.
-*/
-function introRPS() {
-  showMessage(`Rock Paper Scissors is an ancient game. However, it is still valuable in our modern society. However, in our modern era it needs to evolve to keep up with the times. Therefore, Hasintbro is determined to bring this important game with us into the future.`);
-  console.log('%cWelcome to sin(rock, paper, scissors).', 'color: turquoise; font-size: 30px');
-  console.log('This is where all your games of rock paper scissors will become math!');
-  console.log('%cIntroduction', 'color: turquoise; font-size: 25px');
-  console.log(`Your games are like they always where, but we here at Hasintbro have developed this tool so that everything becomes math.`);
-  console.log('%cExplanation', 'color: turquoise; font-size: 25px');
-} //End of intro rock paper scissors function
-
-
-
-
-
-/*
-Summary: Explanation rock paper scissors function
-@parms: none
-@return: None - Displays game instructions via alerts and logs.
-*/
-function explanationRPS() {
-  showMessage(
-    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter rock paper or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
-  );
-  console.log(
-    `The math will resolve all your competitions.\n\nHow to play RPS: 1. Enter rock paper or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
-  );
-  console.log(
-    '%cCome back any time you need a good game of rock paper scissors!',
-    "color: #3399FF"
-  );
-} //End of explanation rock pa//r scissors function
-
-
-
-
-
-/*
-Summary: askes the user to enter a move
-@parms: None
-@return: None
-*/
-function askForChoice() {
-  showMessage("Type R, P, or S", true); // Show the message and keep input visible
-
-  inputArea.classList.remove("hidden"); // Show the input field
-  userInput.value = ''; // Clear previous input
-
-  // Attach submit button listener
-  document.getElementById("submitChoice").onclick = function () {
-    const value = userInput.value;
-    inputArea.classList.add("hidden"); // hide after submission
-    userChoiceHandler(value);          // process choice
-  };
-} //End of ask for choice function
-
-
-
-
-
-/*
-Summary: display a confermation of yes no
-@parms: confirmMessage, callbackYes, callbackNo, isFullMessage
-@return: None
-*/
-function askYesNo(confirmMessage, callbackYes, callbackNo, isFullMessage = false) {
-  // function var
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn = document.getElementById("noBtn");
-
-
-
-  confirmText.innerText = isFullMessage ? confirmMessage : `Do you want to play "${confirmMessage}"?`;   // If isFullMessage is true, use the message as-is. Otherwise, prepend "Do you want to play"
-
-  confirmArea.classList.remove("hidden");
-
-  yesBtn.onclick = null;
-  noBtn.onclick = null;
-
-  yesBtn.onclick = () => {
-      confirmArea.classList.add("hidden");
-      callbackYes();
-  };
-
-  noBtn.onclick = () => {
-      confirmArea.classList.add("hidden");
-      callbackNo();
-  };
-} // end of function
-
-
-
-
-
-/*
-Summary: Validates user input, maps choices to game data, and manages the confirmation/gameplay loop.
-@parms: playerChoice
-@return: Returns "quit" for null input or "retry" for invalid input
-*/ 
-function userChoiceHandler(playerChoice) {
-  // input validation
-  if  (playerChoice === null) {
-    alert("User cancelled the prompt.");
-    alert('Click "play" to try again.');
-    console.log("User cancelled the prompt.");
-    console.log('Click "play" to try again.');
-    return "quit";
-  }
-  
-  playerChoiceLowercase = playerChoice.toLowerCase();
-  playerChoiceConverted = playerChoiceLowercase.charAt(0);
-
-  switch (playerChoiceConverted) {
-    case 'r':
-      playerChoiceConfirmation = 'rock';
-      playerChoiceTrig = rpsAngles.rock;
-      break;
-
-    case 'p':
-      playerChoiceConfirmation = 'paper';
-      playerChoiceTrig = rpsAngles.paper;
-      break;
-
-    case 's':
-      playerChoiceConfirmation = 'scissors';
-      playerChoiceTrig = rpsAngles.scissors;
-      break;
-
-    default:
-      console.log("That's not a legal play.");
-      console.log("Pick rock paper or scissors.");
-      alert("That's not a legal play.");
-      alert("Pick rock paper or scissors.");
-      askForChoice()
-      return "retry";
-  } // end of input validation
-    
-  showMessage(`Confirm your play:`);
-
-  // Ask user to confirm choice
-  askYesNo(
-    playerChoiceConfirmation,
-    () => {
-      // YES → proceed
-      computerChoiceCollector();
-      whatHappened();
-      lastWinner = normalDetermineWinner();
-      updateScoreDisplay();
-      gameScoreLog();
-      drawGraph();
-
-      // Ask if they want to play again
-      askYesNo(
-        "Do you want to continue the round?",
-        () => { 
-          roundNumber++;
-          updateRoundDisplay();
-          RPSGame(); 
-        },
-        () => { endRound(); },
-        true
-      );
-    },
-    () => {
-      // NO → pick again
-      askForChoice();
-    }
-  );
-} // end of function choice handler function
-
-
-
-
-
-/*
-Summary: Computer choice collector 
-@parms: var name or expression and datatyp
-@return: String - Returns "play", "retry", or "quit" based on user input and confirmations.
-*/
-function computerChoiceCollector() {
-  randomNumber = Math.floor(Math.random()*3);
-
-  computerChoice = ['rock', 'paper', 'scissors'];
-  //computerChoiceTrig = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
-  computerChoiceTrig = computerChoice[randomNumber];
-  computerChoiceTrig = rpsAngles[computerChoiceTrig];
-}//End of computer choice collector
-
-
-
-
-
-/*
-Summary: Determine Winner function 
-@parms: trigResult, 
-@return: String - Returns the winner of the round: "player", "computer", or "tie".
-*/
-function normalDetermineWinner() {
-  trigResult = Math.sin(computerChoiceTrig - playerChoiceTrig); // Using sine to determine the relative position on the unit circle
-  if (trigResult > 0) {
-    youWin();
-    gameScore.playerWin++;
-    return "player";
-  } else if (trigResult < 0) {
-    youLose();
-    gameScore.computerWin++;
-    return "computer";
-  } else {
-    youDraw();
-    gameScore.gameDraw++;
-    return "tie";
-  }
-} //End of determine winner function
-
-
-
-
-
-/*
-Summary: What happened function 
-@parms: gameLog
-@return: None - Displays the summary of the current moves via alert.
-*/
-function whatHappened() {
-  gameLog = `player: ${playerChoiceConfirmation}\ncpu: ${computerChoice[randomNumber]}`;
-  console.log(gameLog);
-}//End of what happened function
-
-
-
-
-
-/*
-Summary: Game score log function 
-@parms: None
-@return: None - Logs the current scoreboard to the console.
-*/
-function gameScoreLog() {
-  console.log(`-----\nFinal Score:\nYou: ${gameScore.playerWin}\nComputer: ${gameScore.computerWin}\nDraw: ${gameScore.gameDraw}\n-----`);
-}//End of game score log function
-
-
-
-
-
-/*
-Summary: You win function 
-@parms: var name or expression and datatype
-@return: None - Displays the result message to the user.
-*/
-function youWin() {
-  showMessage(`${gameLog}\n\nCongrats you win!`);
-  console.log('we have a winner!');
-} //End of you win function
-
-
-
-
-
-/*
-Summary: You draw function 
-@parms: var name or expression and datatype
-@return: None - Displays the result message to the user.
-*/
-function youDraw() {
-  showMessage(`${gameLog}\n\nyou draw, go do some drawing`);
-  console.log('we have... a draw');
-} //End of you draw function
-
-
-
-
-
-/*
-Summary: You lose function
-@parms: var name or expression and datatype
-@return: None - Displays the result message to the user.
-*/
-function youLose() {
-  showMessage(`${gameLog}\n\nloser`);
-  console.log('we have a loser...');
-} // End of you lose function
-
-
-
-
-
-/*
-Summary: You lose function
-@parms: var name or expression and datatype
-@return: None - Displays the result message to the user.
-*/
-function endRound() {
-  thankYou(); // Call the thank you function
-
-  // Reset game score
-  gameScore = { playerWin: 0, computerWin: 0, gameDraw: 0 };
-  updateScoreDisplay();
-  lastWinner = null;
-  playerChoice = '';
-  playerChoiceLowercase = '';
-  playerChoiceConverted = '';
-  playerChoiceConfirmation = '';
-  computerChoice = '';
-
-  //reset round number
-  roundNumber = 0;
-  updateRoundDisplay();
-
-  // Hide other areas
-  inputArea.classList.add("hidden");
-  msgBox.classList.add("hidden");
-  confirmArea.classList.add("hidden");
-
-  endMsg.classList.remove("hidden");
-
-  document.getElementById("playAgainBtn").onclick = () => {
-  endMsg.classList.add("hidden");
-  startRoundSession();
-};
-
-} // end of end round function
-
-
-
-
-
-/*
-Summary: Thank you function 
-@parms: var name or expression and datatype
-@return: None - Logs a closing message.
-*/
-  function thankYou(){
-    console.log('Thank you for visiting and playing a round of Hasintbro RPS');
-} // End of thank you function
-
-
-
-
-
-/*
-Summary: Draw emoji function 
-@parms: var name or expression and datatype
-@return: None - Draws a specific emoji to the HTML5 Canvas.
-*/
-function drawEmoji(x, y, emoji, size = 24) {
-  ctx.font = `${size}px serif`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(emoji, x, y);
-} // End of draw emoji function
-
-
-
-
-
-/*
-Summary: Start of draw graph function 
-@parms: var name or expression and datatyp
-@return: None - Renders the sine wave, points, and connection lines on the Canvas.
-*/
-function drawGraph() {
-  ctx.clearRect(0, 0, width, height);
-
-  // Draw axes
-  ctx.beginPath();
-  ctx.moveTo(0, height / 2);
-  ctx.lineTo(width, height / 2); // x-axis
-  ctx.moveTo(width / 2, 0);
-  ctx.lineTo(width / 2, height); // y-axis
-  ctx.strokeStyle = "#7d6b8d";
-  ctx.stroke();
-
-  // Draw sine wave
-  ctx.beginPath();
-  ctx.strokeStyle = "#402954";
-  for (let x = -Math.PI * 2; x <= Math.PI * 2; x += 0.01) {
-    const canvasX = (x + Math.PI * 2) * (width / (Math.PI * 4));
-    const canvasY = height / 2 - Math.sin(x) * 100;
-    if (x === -Math.PI * 2) ctx.moveTo(canvasX, canvasY);
-    else ctx.lineTo(canvasX, canvasY);
-  }
-  ctx.stroke();
-
-  for (let key in rpsAngles) {
-    const x = (rpsAngles[key] + Math.PI * 2) * (width / (Math.PI * 4));
-    const y = height / 2 - Math.sin(rpsAngles[key]) * 100;
-    drawEmoji(x, y, rpsEmoji[key], 20);
-  }
-
-  // line connecting player and CPU
-  if (
-    typeof playerChoiceTrig !== "undefined" &&
-    typeof computerChoiceTrig !== "undefined" &&
-    lastWinner
-  ) {
-    ctx.beginPath();
-
-    if (lastWinner === "player") ctx.strokeStyle = "green";
-    else if (lastWinner === "computer") ctx.strokeStyle = "red";
-    else ctx.strokeStyle = "gray";
-
-    ctx.lineWidth = 3;
-
-    ctx.moveTo(
-      (playerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4)),
-      height / 2 - Math.sin(playerChoiceTrig) * 100
-    );
-    ctx.lineTo(
-      (computerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4)),
-      height / 2 - Math.sin(computerChoiceTrig) * 100
-    );
-
-    ctx.stroke();
-  }
-
-  // Draw CPU dot
-  if (typeof computerChoiceTrig !== "undefined") {
-    const cx = (computerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
-    const cy = height / 2 - Math.sin(computerChoiceTrig) * graphAmplitude;
-    drawEmoji(cx, cy, "🤖", 28);
-  }
-
-  // Draw player dot
-  if (typeof playerChoiceTrig !== "undefined") {
-    const px = (playerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
-    const py = height / 2 - Math.sin(playerChoiceTrig) * graphAmplitude;
-    drawEmoji(px, py, "🧑", 28);
-  }
-} // End of draw graph function
-
-
-
-
-
-/*
-Summary: Updates and displays a message box while managing UI visibility.
-@parms: messageText, keepInputVisible
-@return: None
-*/
-function showMessage(messageText, keepInputVisible = false) {
-  confirmArea.classList.add("hidden"); // hide confirm area
-
-  if (!keepInputVisible) inputArea.classList.add("hidden");   // Only hide inputArea if keepInputVisible is false
-
-  msgText.innerText = messageText;
-  msgBox.classList.remove("hidden");
-} // end of show message function
-
-
-
-
-
-/*
-Summary: Initializes a new game round and starts the gameplay logic.
-@parms: None
-@return: None
-*/
-function startRoundSession() {
-  roundNumber = 1;
-  updateRoundDisplay();
-  RPSGame();
-} // end of start round session function
-
-
-
-
-
-/*
-Summary: Updates the UI and console with the current round status.
-@parms: roundNumber, roundText
-@return: None
-*/
-function updateRoundDisplay() {
-  if (roundNumber > 0) {
-    roundText.innerText = `Round: ${roundNumber}`;
-    console.log(`Round: ${roundNumber}`);
-  } else {
-    roundText.innerText = "Round: Not Started";
-    console.log(`Rounds reset.`)
-  }
-} // end of update round display function
-
-
-
-
-
-/*
-Summary: Updates the UI text to reflect current game standings.
-@parms: None
-@return: None
-*/
-function updateScoreDisplay() {
-  scoreText.innerText = 
-    `Score -> You: ${gameScore.playerWin} | CPU: ${gameScore.computerWin} | Draws: ${gameScore.gameDraw}`;
-} // end of update score display function
-
-
-
-
-
-/*
-Summary: Capitalize First Letter Function 
-@parms: str
-@return: String - Returns the input string with the first character capitalized.
-*/
-capitalizeFirstLetter = (str) => { 
-  if (!str) return ''; 
-  return str.charAt(0).toUpperCase() + str.slice(1); 
-} // End of Capitalize First Letter Function
-
-
-
-
-
-/*
-Summary: Prompts for, validates, and displays a capitalized user-provided name.
-@parms: userName, userNameCapitalized
-@return: None - Updates the global userNameCapitalized and the DOM.
-*/
-function userNameCollector() {
-  userName = prompt("What is your name?");
-
-  // keep reprompting if user gave empty/blank input
-  while ((userName !== null) && (userName.trim() === "")) {
-    userName = prompt("Please enter a name:");
-  } // End of while user need to enter a name
-
-  userNameCapitalized = capitalizeFirstLetter(userName);
-
-  if (userName === null || !confirm(`Your name is "${userNameCapitalized}"?`)) {
-    userNameCapitalized = "Mr. Vatougios";
-    alert('Username set to default.');
-    console.log('Username set to default.');
-  } 
-  
-  usernameElement = document.getElementById("username");
-  usernameElement.innerHTML = userNameCapitalized;
-} // End of assigning user name function
-
-
-
-
-
-// Start of program
-
-
-
-
-
-// Global variable declarations
-
-
-
-// intro variables
-const playUI = document.getElementById("introStepFourUI");
-let introSteps = [
-  welcomeRPS,
-  introRPS,
-  explanationRPS,
-  introStepFour 
-];
-let currentIntroStep = 0;
-
-// username variables
-var userName = '';
-let usernameElement; // html element of username
-let userNameCapitalized; // capitalized username
-let str; // to capitalize any string
-
-// ask another question prompting
-let tryAgain;
-
-// html messages variables
-const msgBox = document.getElementById("messageBox");
-const msgText = document.getElementById("messageText");
-const inputArea = document.getElementById("inputArea");
-const confirmArea = document.getElementById("confirmArea");
-const confirmText = document.getElementById("confirmText");
-
-let classList;
-let innerText;
-let messageText;
-let keepInputVisible;
-
-// user input variables
-const userInput = document.getElementById("userInput");
-
-// game variables
-let playerChoice;
-let playerChoiceLowercase;
-let playerChoiceConverted;
-let playerChoiceConfirmation;
-
-let computerChoice;
-let gameLog;
-
-// game results variables
-let trigResult;
-let playerChoiceTrig;
-let computerChoiceTrig;
-
-// round variables
-let roundNumber = 0;
-const roundText = document.getElementById("roundCounter");
-const endMsg = document.getElementById("endRoundMessage"); // end of round variable
-
-// score variables
-const scoreText = document.getElementById("scoreDisplay");
-let lastWinner = null;
-let gameScore = { playerWin: 0, computerWin: 0, gameDraw: 0 };
-let playerWin;
-let computerWin;
-let gameDraw;
-
-// graph variables
-const canvas = document.getElementById("graph");
-const ctx = canvas.getContext("2d");
-const width = canvas.width;
-const height = canvas.height;
-const rpsAngles = {
-  rock: -3 * Math.PI / 2,      // sin = 1 → top
-  paper: 0,                    // sin = 0 → middle
-  scissors: 3 * Math.PI / 2    // sin = -1 → bottom
-};
-const rpsEmoji = {
-  rock: "🪨",
-  paper: "📄",
-  scissors: "✂️"
-};
-const graphAmplitude = 100;
-let font;
-let textAlign
-let textBaseline;
-let strokeStyle;
-
-
-// ASCII art
-const ASCIITitle = String.raw`                                                                                                         
+// --- ASCII Art Title ---
+const asciiTitleArt = String.raw`
      _______
----'   _____)           _______  _______    _______  ____ ___     
+---'   _____)           _______  _______    _______  ____ ___
         (_____)       //       \/       \\//       \/    /   \
         (_____)      //    /   /    /   ///        /         /
-         (____)     /        _/    /    /       --//       _/ 
----._____(___)      \____/___/\________/\________/\\___/___/  
+         (____)     /        _/    /    /       --//       _/
+---._____(___)      \____/___/\________/\________/\\___/___/
 
      __________
----'    ______/_____        ▄▄▄▄▄▄▄     ▄▄▄▄   ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
-           __________)      ███▀▀███▄ ▄██▀▀██▄ ███▀▀███▄ ███▀▀▀▀▀ ███▀▀███▄
-          ____________)     ███▄▄███▀ ███  ███ ███▄▄███▀ ███▄▄    ███▄▄███▀
-         ____________)      ███▀▀▀▀   ███▀▀███ ███▀▀▀▀   ███      ███▀▀██▄ 
----._____________)          ███       ███  ███ ███       ▀███████ ███  ▀███
+---'    ______/_____        PPPPPPP    AAA   PPPPPPP  EEEEEEE RRRRRRR
+           __________)      PP   PP  AA  AA  PP   PP  EE      RR   RR
+          ____________)     PPPPPPP  AAAAAA  PPPPPPP  EEEEE   RRRRRRR
+         ____________)      PP      AA    AA PP       EE      RR  RR
+---._____________)          PP      AA    AA PP       EEEEEEE RR   RR
 
      __________
----'   _______/_____         __    ___ __  __   __    ___   ____   __ 
-             ________)      (( \  //   || (( \ (( \  // \\  || \\ (( \
-          ____________)      \\  ((    ||  \\   \\  ((   )) ||_//  \\ 
-         (____)             \_))  \\__ || \_)) \_))  \\_//  || \\ \_))
----._____(___)                                                                                   
-`;                                                                                                 
+---'   _______/_____        SSSSS    CCC   IIIIII  SSSSS  SSSSS
+             ________)      SS      CC  CC   II    SS      SS
+          ____________)      SSSS   CC       II     SSSS    SSSS
+         (____)                 SS  CC  CC   II        SS      SS
+---._____(___)             SSSSS    CCC   IIIIII  SSSSS  SSSSS
+`;
 
 
-
-// End of variable declarations
-
-
+// --- Game State ---
+let currentGameState = 'IDLE'; // tracks the active phase of the game
 
 
-
-// Start of Main
-window.addEventListener("DOMContentLoaded", playRPS);
-// End  of Main
+// --- Intro Variables ---
+let currentIntroStepIndex = 0; // which step of the intro is currently active
 
 
+// --- Username Variables ---
+let rawUserName         = ''; // raw string from prompt
+let capitalizedUserName = ''; // formatted version shown in the UI
 
 
+// --- Player Choice Variables ---
+let playerChoiceRaw       = ''; // raw value from the text input
+let playerChoiceLowerCase = ''; // lowercased and trimmed version
+let playerChoiceFirstChar = ''; // first character ('r', 'p', or 's')
+let playerChoiceWord      = ''; // full word: 'rock', 'paper', or 'scissors'
+let playerChoiceAngle     = 0;  // corresponding unit-circle angle
 
 
+// --- Computer Choice Variables ---
+let computerChoiceArray = ['rock', 'paper', 'scissors']; // array of valid CPU choices
+let computerChoiceWord  = '';  // the CPU's randomly selected word
+let computerChoiceAngle = 0;   // the CPU's corresponding angle
+let computerRandomIndex = 0;   // the random index used for selection
 
-// End of program
 
+// --- Game Result Variables ---
+let sinDifferenceResult = 0;    // Math.sin(cpuAngle - playerAngle)
+let lastRoundWinner     = null; // 'player', 'computer', or 'tie'
+let currentRoundGameLog = '';   // one-line summary of the round
+
+
+// --- Score Object ---
+let gameScoreObject = {
+    playerWin:   0,
+    computerWin: 0,
+    gameDraw:    0
+}; // END of gameScoreObject
+
+
+// --- Round Variable ---
+let currentRoundNumber = 0; // increments each time the player continues
+
+
+// --- Pending Confirm Callbacks ---
+let pendingConfirmYesCallback = null; // stored function for YES button
+let pendingConfirmNoCallback  = null; // stored function for NO button
+
+
+// --- RPS Angle Map ---
+const rpsAngleMap = {
+    rock:     -3 * Math.PI / 2, // sin(-3π/2) = 1  → top of the wave
+    paper:    0,                 // sin(0) = 0       → midpoint
+    scissors:  3 * Math.PI / 2  // sin(3π/2) = -1   → bottom of the wave
+}; // END of rpsAngleMap
+
+
+// --- RPS Emoji Map ---
+const rpsEmojiMap = {
+    rock:     '🪨',
+    paper:    '📄',
+    scissors: '✂️'
+}; // END of rpsEmojiMap
+
+
+// --- Canvas Variables ---
+const canvasElement       = document.getElementById('graph');
+const canvasContext       = canvasElement.getContext('2d');
+const canvasWidth         = canvasElement.width;
+const canvasHeight        = canvasElement.height;
+const graphAmplitudeValue = 100;
+
+
+// --- DOM Element References ---
+const messageBoxElement        = document.getElementById('messageBox');
+const messageTextElement       = document.getElementById('messageText');
+const inputAreaElement         = document.getElementById('inputArea');
+const userInputElement         = document.getElementById('userInput');
+const confirmAreaElement       = document.getElementById('confirmArea');
+const confirmTextElement       = document.getElementById('confirmText');
+const roundCounterElement      = document.getElementById('roundCounter');
+const scoreDisplayElement      = document.getElementById('scoreDisplay');
+const introStepFourElement     = document.getElementById('introStepFourUI');
+const endRoundMsgElement       = document.getElementById('endRoundMessage');
+const finalScoreSummaryElement = document.getElementById('finalScoreSummary');
+const usernameDisplayElement   = document.getElementById('username');
+
+
+// --- Intro Steps Array (function references — hoisted, safe to reference here) ---
+const introStepsArray = [
+    displayWelcomeStep,
+    displayIntroStep,
+    displayExplanationStep,
+    displayPlayButtonStep
+]; // END of introStepsArray
+
+
+// ============================================================
+// PROGRAM MANAGER — Central State Controller
+// ============================================================
+
+
+/*
+Summary: The central game state manager. All game flow routes through here.
+         No function calls another function directly for control flow —
+         they call gameManager() and return. This keeps one clear entry point.
+@param  newGameState {string} — the state to transition into
+@return None (Void)
+*/
+function gameManager(newGameState) {
+
+    currentGameState = newGameState;
+
+    if (newGameState === 'INTRO') {
+        currentIntroStepIndex = 0;
+        runCurrentIntroStep();
+
+    } else if (newGameState === 'ADVANCE_INTRO') {
+        currentIntroStepIndex++; // increment to move forward in intro
+        runCurrentIntroStep();
+
+    } else if (newGameState === 'BACK_INTRO') {
+        currentIntroStepIndex--; // decrement to go back one step
+        runCurrentIntroStep();
+
+    } else if (newGameState === 'START_ROUND') {
+        startRoundSession();
+
+    } else if (newGameState === 'GET_CHOICE') {
+        displayChoiceInput();
+
+    } else if (newGameState === 'CONFIRM_CHOICE') {
+        displayChoiceConfirmation();
+
+    } else if (newGameState === 'COMPUTE_RESULT') {
+        computeAndDisplayResult();
+
+    } else if (newGameState === 'ASK_CONTINUE') {
+        askToContinueRound();
+
+    } else if (newGameState === 'END_ROUND') {
+        endRound();
+
+    } else {
+        console.log('gameManager: unknown state received — ' + newGameState);
+    } // END of state router
+
+} // END of gameManager
+
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+
+
+/*
+Summary: Entry point for the program. Collects the username,
+         logs the console intro, and launches the intro sequence.
+@param  none
+@return None (Void)
+*/
+function initializeGame() {
+    collectUserName();
+    logConsoleIntro();
+    gameManager('INTRO');
+} // END of initializeGame
+
+
+/*
+Summary: Sets up ALL DOM event listeners in one place.
+         Called once when the script loads (defer guarantees DOM is ready).
+         No event listeners are set inside other functions.
+@param  none
+@return None (Void)
+*/
+function initializeEventListeners() {
+
+    // Submit choice button — reads input field and routes to choice processing
+    document.getElementById('submitChoice').addEventListener('click', function () {
+        playerChoiceRaw = userInputElement.value;
+        inputAreaElement.classList.add('hidden');
+        processPlayerChoice();
+    }); // END of submitChoice listener
+
+
+    // Yes button — runs the stored YES callback if one exists
+    document.getElementById('yesBtn').addEventListener('click', function () {
+        confirmAreaElement.classList.add('hidden');
+
+        if (pendingConfirmYesCallback !== null) {
+            const yesCallbackToRun    = pendingConfirmYesCallback;
+            pendingConfirmYesCallback = null;
+            pendingConfirmNoCallback  = null;
+            yesCallbackToRun();
+        } // END of if yes callback exists
+
+    }); // END of yesBtn listener
+
+
+    // No button — runs the stored NO callback if one exists
+    document.getElementById('noBtn').addEventListener('click', function () {
+        confirmAreaElement.classList.add('hidden');
+
+        if (pendingConfirmNoCallback !== null) {
+            const noCallbackToRun     = pendingConfirmNoCallback;
+            pendingConfirmYesCallback = null;
+            pendingConfirmNoCallback  = null;
+            noCallbackToRun();
+        } // END of if no callback exists
+
+    }); // END of noBtn listener
+
+
+    // Play button — hides intro UI and starts the first round
+    document.getElementById('playBtn').addEventListener('click', function () {
+        introStepFourElement.classList.add('hidden');
+        messageBoxElement.classList.add('hidden');
+        gameManager('START_ROUND');
+    }); // END of playBtn listener
+
+
+    // Play again button — hides end overlay and restarts
+    document.getElementById('playAgainBtn').addEventListener('click', function () {
+        endRoundMsgElement.classList.add('hidden');
+        gameManager('START_ROUND');
+    }); // END of playAgainBtn listener
+
+
+    // Event delegation for dynamic Next / Back buttons inside messageBox
+    messageBoxElement.addEventListener('click', function (clickEvent) {
+
+        if (clickEvent.target.id === 'nextBtn') {
+            gameManager('ADVANCE_INTRO');
+        } // END of if next button clicked
+
+        if (clickEvent.target.id === 'backBtn') {
+            gameManager('BACK_INTRO');
+        } // END of if back button clicked
+
+    }); // END of messageBox delegate listener
+
+} // END of initializeEventListeners
+
+
+// ============================================================
+// INTRO SEQUENCE
+// ============================================================
+
+
+/*
+Summary: Calls the intro function at the current step index.
+@param  none
+@return None (Void)
+*/
+function runCurrentIntroStep() {
+    introStepsArray[currentIntroStepIndex]();
+} // END of runCurrentIntroStep
+
+
+/*
+Summary: Appends Next and/or Back navigation buttons to the message box.
+         Removes any existing buttons before adding new ones.
+@param  none
+@return None (Void)
+*/
+function appendIntroNavButtons() {
+
+    const existingNextButton = document.getElementById('nextBtn');
+    const existingBackButton = document.getElementById('backBtn');
+
+    if (existingNextButton !== null) {
+        existingNextButton.remove();
+    } // END of if existing next button
+
+    if (existingBackButton !== null) {
+        existingBackButton.remove();
+    } // END of if existing back button
+
+    // Add Back button if not on the first step
+    if (currentIntroStepIndex > 0) {
+        const backNavButton       = document.createElement('button');
+        backNavButton.id          = 'backBtn';
+        backNavButton.textContent = '← Back';
+        backNavButton.className   = 'btn btn-secondary';
+        backNavButton.style.marginTop   = '0.75rem';
+        backNavButton.style.marginRight = '0.5rem';
+        messageBoxElement.appendChild(backNavButton);
+    } // END of if not on the first step
+
+    // Add Next button if not on the last step
+    if (currentIntroStepIndex < introStepsArray.length - 1) {
+        const nextNavButton       = document.createElement('button');
+        nextNavButton.id          = 'nextBtn';
+        nextNavButton.textContent = 'Next →';
+        nextNavButton.className   = 'btn btn-primary';
+        nextNavButton.style.marginTop = '0.75rem';
+        messageBoxElement.appendChild(nextNavButton);
+    } // END of if not on the last step
+
+} // END of appendIntroNavButtons
+
+
+/*
+Summary: Intro Step 1 — Displays the personalised welcome message.
+@param  none
+@return None (Void)
+*/
+function displayWelcomeStep() {
+    introStepFourElement.classList.add('hidden');
+    displayMessage(`Welcome to Hasintbro Rock Paper Scissors, ${capitalizedUserName}!\n\nThis is not your ordinary RPS — every match becomes mathematics.`);
+    appendIntroNavButtons();
+    console.log(`Hi ${capitalizedUserName}! — Welcome step shown.`);
+} // END of displayWelcomeStep
+
+
+/*
+Summary: Intro Step 2 — Displays background information about the game concept.
+@param  none
+@return None (Void)
+*/
+function displayIntroStep() {
+    displayMessage(
+        `Rock Paper Scissors is an ancient game — but at Hasintbro, we believe it needs to evolve.\n\n` +
+        `We mapped each choice to an angle on the unit circle. ` +
+        `Math.sin(cpuAngle − yourAngle) decides every winner.\n\n` +
+        `Welcome to sin(rock, paper, scissors).`
+    );
+    appendIntroNavButtons();
+    console.log('%cWelcome to sin(rock, paper, scissors)', 'color: turquoise; font-size: 22px');
+    console.log('Every game becomes math. The graph below updates after each round.');
+} // END of displayIntroStep
+
+
+/*
+Summary: Intro Step 3 — Explains how to play the game step by step.
+@param  none
+@return None (Void)
+*/
+function displayExplanationStep() {
+    displayMessage(
+        `How to play:\n\n` +
+        `  1. Type R, P, or S in the input box and press Submit.\n` +
+        `  2. Confirm your choice with the Yes button.\n` +
+        `  3. See who won — then choose to continue or end the round.\n\n` +
+        `The sine wave graph updates after every play.\n` +
+        `Green line = you win  |  Red = CPU wins  |  Grey = draw`
+    );
+    appendIntroNavButtons();
+    console.log('%cHow to Play', 'color: turquoise; font-size: 18px');
+    console.log('1. Type R, P, or S   2. Confirm your pick   3. See the result on the graph');
+} // END of displayExplanationStep
+
+
+/*
+Summary: Intro Step 4 — Hides the message box and reveals the Play button.
+@param  none
+@return None (Void)
+*/
+function displayPlayButtonStep() {
+    messageBoxElement.classList.add('hidden');
+    introStepFourElement.classList.remove('hidden');
+} // END of displayPlayButtonStep
+
+
+// ============================================================
+// USERNAME COLLECTION
+// ============================================================
+
+
+/*
+Summary: Prompts the user for a name, validates it (no blank input),
+         confirms it, capitalizes it, and updates the DOM display.
+@param  none
+@return None (Void)
+*/
+function collectUserName() {
+
+    rawUserName = prompt("What is your name?");
+
+    // Keep re-prompting if the user entered blank or only spaces
+    while ((rawUserName !== null) && (rawUserName.trim() === '')) {
+        rawUserName = prompt("Please enter a name (cannot be blank):");
+    } // END of while blank name entered
+
+    capitalizedUserName = capitalizeFirstLetter(rawUserName);
+
+    if ((rawUserName === null) || (!confirm(`Your name is "${capitalizedUserName}" — confirm?`))) {
+        capitalizedUserName = 'Mr. Vatougios';
+        alert('Username set to default: Mr. Vatougios');
+        console.log('Username set to default.');
+    } // END of if name cancelled or rejected
+
+    usernameDisplayElement.innerHTML = capitalizedUserName;
+
+} // END of collectUserName
+
+
+/*
+Summary: Returns a copy of the input string with its first letter capitalized.
+         Uses a ternary to guard against empty or null input.
+@param  inputString {string} — the string to capitalize
+@return {string} — capitalized string, or empty string if falsy
+*/
+function capitalizeFirstLetter(inputString) {
+    const capitalizedResult = (!inputString) ? '' : inputString.charAt(0).toUpperCase() + inputString.slice(1);
+    return capitalizedResult;
+} // END of capitalizeFirstLetter
+
+
+// ============================================================
+// ROUND MANAGEMENT
+// ============================================================
+
+
+/*
+Summary: Initializes round variables and sends control to GET_CHOICE.
+@param  none
+@return None (Void)
+*/
+function startRoundSession() {
+    currentRoundNumber = 1;
+    refreshRoundDisplay();
+    gameManager('GET_CHOICE');
+} // END of startRoundSession
+
+
+/*
+Summary: Clears the input field and reveals the text input area.
+@param  none
+@return None (Void)
+*/
+function displayChoiceInput() {
+    messageBoxElement.classList.add('hidden');
+    confirmAreaElement.classList.add('hidden');
+    userInputElement.value = '';
+    inputAreaElement.classList.remove('hidden');
+    userInputElement.focus();
+} // END of displayChoiceInput
+
+
+/*
+Summary: Reads the global playerChoiceRaw, validates it, maps it to a word
+         and angle, then routes to CONFIRM_CHOICE or back to GET_CHOICE.
+@param  none  (reads global playerChoiceRaw)
+@return None (Void)
+*/
+function processPlayerChoice() {
+
+    if (playerChoiceRaw === null) {
+        alert("Input was cancelled — please try again.");
+        console.log("Input cancelled — returning to GET_CHOICE.");
+        gameManager('GET_CHOICE');
+        return;
+    } // END of if null input
+
+    playerChoiceLowerCase = playerChoiceRaw.toLowerCase().trim();
+    playerChoiceFirstChar = playerChoiceLowerCase.charAt(0);
+
+    if (playerChoiceFirstChar === 'r') {
+        playerChoiceWord  = 'rock';
+        playerChoiceAngle = rpsAngleMap.rock;
+
+    } else if (playerChoiceFirstChar === 'p') {
+        playerChoiceWord  = 'paper';
+        playerChoiceAngle = rpsAngleMap.paper;
+
+    } else if (playerChoiceFirstChar === 's') {
+        playerChoiceWord  = 'scissors';
+        playerChoiceAngle = rpsAngleMap.scissors;
+
+    } else {
+        alert("That's not a valid move. Please enter R, P, or S.");
+        console.log("Invalid input: '" + playerChoiceRaw + "' — re-routing to GET_CHOICE.");
+        gameManager('GET_CHOICE');
+        return;
+    } // END of choice mapping
+
+    gameManager('CONFIRM_CHOICE');
+
+} // END of processPlayerChoice
+
+
+/*
+Summary: Shows the confirm dialog for the player's chosen move.
+         Stores YES/NO callbacks so the buttons know where to route.
+@param  none
+@return None (Void)
+*/
+function displayChoiceConfirmation() {
+
+    confirmTextElement.innerText = `You chose ${playerChoiceWord}. Confirm?`;
+    confirmAreaElement.classList.remove('hidden');
+    messageBoxElement.classList.add('hidden');
+
+    // Store callbacks — picked up by the yes/no event listeners
+    pendingConfirmYesCallback = function () {
+        gameManager('COMPUTE_RESULT');
+    }; // END of yes callback assignment
+
+    pendingConfirmNoCallback = function () {
+        gameManager('GET_CHOICE');
+    }; // END of no callback assignment
+
+} // END of displayChoiceConfirmation
+
+
+/*
+Summary: Generates the CPU choice, evaluates the winner, updates the score,
+         redraws the graph, logs the result, then routes to ASK_CONTINUE.
+@param  none
+@return None (Void)
+*/
+function computeAndDisplayResult() {
+    generateComputerChoice();
+    evaluateWinner();
+    refreshScoreDisplay();
+    logRoundToConsole();
+    drawSineGraph();
+    gameManager('ASK_CONTINUE');
+} // END of computeAndDisplayResult
+
+
+/*
+Summary: Randomly picks the computer's choice from computerChoiceArray.
+@param  none
+@return None (Void)
+*/
+function generateComputerChoice() {
+    computerRandomIndex = Math.floor(Math.random() * 3);
+    computerChoiceWord  = computerChoiceArray[computerRandomIndex];
+    computerChoiceAngle = rpsAngleMap[computerChoiceWord];
+} // END of generateComputerChoice
+
+
+/*
+Summary: Uses Math.sin on the angle difference to determine the winner.
+         Updates gameScoreObject and displays a result message.
+@param  none
+@return None (Void)
+*/
+function evaluateWinner() {
+
+    currentRoundGameLog = `You: ${playerChoiceWord}  |  CPU: ${computerChoiceWord}`;
+    sinDifferenceResult = Math.sin(computerChoiceAngle - playerChoiceAngle);
+
+    if (sinDifferenceResult > 0) {
+        lastRoundWinner = 'player';
+        gameScoreObject.playerWin++;
+        displayMessage(`${currentRoundGameLog}\n\nCongrats — you win! 🎉`);
+        console.log('Result: Player wins!');
+
+    } else if (sinDifferenceResult < 0) {
+        lastRoundWinner = 'computer';
+        gameScoreObject.computerWin++;
+        displayMessage(`${currentRoundGameLog}\n\nThe CPU wins this one. 🤖`);
+        console.log('Result: CPU wins.');
+
+    } else {
+        lastRoundWinner = 'tie';
+        gameScoreObject.gameDraw++;
+        displayMessage(`${currentRoundGameLog}\n\nIt's a draw — go do some drawing! ✏️`);
+        console.log('Result: Draw.');
+    } // END of winner evaluation
+
+} // END of evaluateWinner
+
+
+/*
+Summary: Shows the "continue round?" confirm dialog.
+         YES increments the round and routes to GET_CHOICE.
+         NO routes to END_ROUND.
+@param  none
+@return None (Void)
+*/
+function askToContinueRound() {
+
+    confirmTextElement.innerText = 'Do you want to continue the round?';
+    confirmAreaElement.classList.remove('hidden');
+
+    pendingConfirmYesCallback = function () {
+        currentRoundNumber++;
+        refreshRoundDisplay();
+        gameManager('GET_CHOICE');
+    }; // END of continue yes callback
+
+    pendingConfirmNoCallback = function () {
+        gameManager('END_ROUND');
+    }; // END of continue no callback
+
+} // END of askToContinueRound
+
+
+/*
+Summary: Ends the current round. Logs the final score, shows the final score
+         in the overlay, resets all game variables, and reveals the play-again button.
+@param  none
+@return None (Void)
+*/
+function endRound() {
+
+    logThankYou();
+
+    finalScoreSummaryElement.innerText =
+        `Final Score — You: ${gameScoreObject.playerWin} | CPU: ${gameScoreObject.computerWin} | Draws: ${gameScoreObject.gameDraw}`;
+
+    // Reset score object
+    gameScoreObject = { playerWin: 0, computerWin: 0, gameDraw: 0 };
+    refreshScoreDisplay();
+
+    // Reset choice variables
+    lastRoundWinner       = null;
+    playerChoiceRaw       = '';
+    playerChoiceLowerCase = '';
+    playerChoiceFirstChar = '';
+    playerChoiceWord      = '';
+    computerChoiceWord    = '';
+
+    // Reset round counter
+    currentRoundNumber = 0;
+    refreshRoundDisplay();
+
+    // Hide active UI areas
+    inputAreaElement.classList.add('hidden');
+    messageBoxElement.classList.add('hidden');
+    confirmAreaElement.classList.add('hidden');
+
+    // Show end-of-round overlay
+    endRoundMsgElement.classList.remove('hidden');
+
+} // END of endRound
+
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+
+
+/*
+Summary: Reveals the message box with the provided text.
+         Hides confirm and input areas (unless keepInputVisible is true).
+@param  messageText      {string}  — the text to display in the message box
+@param  keepInputVisible {boolean} — if true, the input area stays visible
+@return None (Void)
+*/
+function displayMessage(messageText, keepInputVisible) {
+
+    const shouldKeepInput = (keepInputVisible === true);
+
+    confirmAreaElement.classList.add('hidden');
+
+    if (!shouldKeepInput) {
+        inputAreaElement.classList.add('hidden');
+    } // END of if input should be hidden
+
+    messageTextElement.innerText = messageText;
+    messageBoxElement.classList.remove('hidden');
+
+} // END of displayMessage
+
+
+/*
+Summary: Updates the round counter element in the UI and logs to console.
+@param  none
+@return None (Void)
+*/
+function refreshRoundDisplay() {
+
+    if (currentRoundNumber > 0) {
+        roundCounterElement.innerText = `${currentRoundNumber}`;
+        console.log(`Round: ${currentRoundNumber}`);
+    } else {
+        roundCounterElement.innerText = '—';
+        console.log('Round counter reset.');
+    } // END of if round counter update
+
+} // END of refreshRoundDisplay
+
+
+/*
+Summary: Updates the score display element in the UI.
+@param  none
+@return None (Void)
+*/
+function refreshScoreDisplay() {
+    scoreDisplayElement.innerText =
+        `You: ${gameScoreObject.playerWin}  |  CPU: ${gameScoreObject.computerWin}  |  Draws: ${gameScoreObject.gameDraw}`;
+} // END of refreshScoreDisplay
+
+
+// ============================================================
+// CONSOLE LOGGING
+// ============================================================
+
+
+/*
+Summary: Logs the styled title and game explanation to the browser console.
+         Called once at startup.
+@param  none
+@return None (Void)
+*/
+function logConsoleIntro() {
+    console.log(asciiTitleArt);
+    console.log('%cHasintbro RPS', 'color: turquoise; font-size: 28px; font-weight: bold');
+    console.log('%cRock · Paper · Scissors · Evolved', 'color: #c084fc; font-size: 16px');
+    console.log('─────────────────────────────────────────');
+    console.log('How the math works:');
+    console.log('  rock     → angle: -3π/2  (sin = 1,  top of wave)');
+    console.log('  paper    → angle: 0      (sin = 0,  midpoint)');
+    console.log('  scissors → angle: 3π/2   (sin = -1, bottom of wave)');
+    console.log('  Winner   = Math.sin(cpuAngle − yourAngle)');
+    console.log('    > 0 → CPU wins  |  < 0 → you win  |  = 0 → draw');
+    console.log('─────────────────────────────────────────');
+    console.log(`Welcome, ${capitalizedUserName}! The game is starting...`);
+} // END of logConsoleIntro
+
+
+/*
+Summary: Logs the round number, both choices, the sin value, and the running score.
+@param  none
+@return None (Void)
+*/
+function logRoundToConsole() {
+    console.log(`\nRound ${currentRoundNumber}: ${currentRoundGameLog}`);
+    console.log(`sin(${computerChoiceAngle.toFixed(2)} − ${playerChoiceAngle.toFixed(2)}) = ${sinDifferenceResult.toFixed(4)}`);
+    console.log(`Score → You: ${gameScoreObject.playerWin} | CPU: ${gameScoreObject.computerWin} | Draws: ${gameScoreObject.gameDraw}`);
+} // END of logRoundToConsole
+
+
+/*
+Summary: Logs the closing thank-you and final score summary to the console.
+@param  none
+@return None (Void)
+*/
+function logThankYou() {
+    console.log('─────────────────────────────────────────');
+    console.log(`Thanks for playing Hasintbro RPS, ${capitalizedUserName}!`);
+    console.log(`Final: You ${gameScoreObject.playerWin} | CPU ${gameScoreObject.computerWin} | Draws ${gameScoreObject.gameDraw}`);
+    console.log('─────────────────────────────────────────');
+} // END of logThankYou
+
+
+// ============================================================
+// CANVAS GRAPH
+// ============================================================
+
+
+/*
+Summary: Draws a single emoji character at the given canvas position.
+@param  xCoordinate {number} — horizontal pixel position
+@param  yCoordinate {number} — vertical pixel position
+@param  emojiChar   {string} — the emoji to render
+@param  fontSize    {number} — font size in pixels
+@return None (Void)
+*/
+function drawEmojiOnCanvas(xCoordinate, yCoordinate, emojiChar, fontSize) {
+    canvasContext.font         = `${fontSize}px serif`;
+    canvasContext.textAlign    = 'center';
+    canvasContext.textBaseline = 'middle';
+    canvasContext.fillText(emojiChar, xCoordinate, yCoordinate);
+} // END of drawEmojiOnCanvas
+
+
+/*
+Summary: Clears and redraws the sine wave graph with axes, the wave curve,
+         RPS emoji markers, and a coloured line between the two choices.
+@param  none
+@return None (Void)
+*/
+function drawSineGraph() {
+
+    canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw axes
+    canvasContext.beginPath();
+    canvasContext.moveTo(0, canvasHeight / 2);
+    canvasContext.lineTo(canvasWidth, canvasHeight / 2); // horizontal x-axis
+    canvasContext.moveTo(canvasWidth / 2, 0);
+    canvasContext.lineTo(canvasWidth / 2, canvasHeight); // vertical y-axis
+    canvasContext.strokeStyle = '#7d6b8d';
+    canvasContext.lineWidth   = 1;
+    canvasContext.stroke();
+
+    // Draw sine wave curve
+    canvasContext.beginPath();
+    canvasContext.strokeStyle = '#402954';
+    canvasContext.lineWidth   = 2;
+
+    for (let waveAngle = -Math.PI * 2; waveAngle <= Math.PI * 2; waveAngle += 0.01) {
+
+        const wavePixelX = (waveAngle + Math.PI * 2) * (canvasWidth / (Math.PI * 4));
+        const wavePixelY = canvasHeight / 2 - Math.sin(waveAngle) * graphAmplitudeValue;
+
+        if (waveAngle === -Math.PI * 2) {
+            canvasContext.moveTo(wavePixelX, wavePixelY);
+        } else {
+            canvasContext.lineTo(wavePixelX, wavePixelY);
+        } // END of if first point on wave
+
+    } // END of sine wave loop
+
+    canvasContext.stroke();
+
+    // Draw the RPS emoji icons at their respective wave positions
+    for (const choiceKey in rpsAngleMap) {
+
+        const iconPixelX = (rpsAngleMap[choiceKey] + Math.PI * 2) * (canvasWidth / (Math.PI * 4));
+        const iconPixelY = canvasHeight / 2 - Math.sin(rpsAngleMap[choiceKey]) * graphAmplitudeValue;
+        drawEmojiOnCanvas(iconPixelX, iconPixelY, rpsEmojiMap[choiceKey], 20);
+
+    } // END of for each RPS choice
+
+    // Draw line and player/CPU markers only after a round has been played
+    if (lastRoundWinner !== null) {
+
+        const playerPixelX = (playerChoiceAngle + Math.PI * 2) * (canvasWidth / (Math.PI * 4));
+        const playerPixelY = canvasHeight / 2 - Math.sin(playerChoiceAngle) * graphAmplitudeValue;
+        const cpuPixelX    = (computerChoiceAngle + Math.PI * 2) * (canvasWidth / (Math.PI * 4));
+        const cpuPixelY    = canvasHeight / 2 - Math.sin(computerChoiceAngle) * graphAmplitudeValue;
+
+        // Set line colour based on winner
+        canvasContext.beginPath();
+        canvasContext.lineWidth = 3;
+
+        if (lastRoundWinner === 'player') {
+            canvasContext.strokeStyle = 'green';
+        } else if (lastRoundWinner === 'computer') {
+            canvasContext.strokeStyle = 'red';
+        } else {
+            canvasContext.strokeStyle = 'gray';
+        } // END of winner colour selection
+
+        canvasContext.moveTo(playerPixelX, playerPixelY);
+        canvasContext.lineTo(cpuPixelX, cpuPixelY);
+        canvasContext.stroke();
+
+        // Draw player and CPU emoji markers over the line
+        drawEmojiOnCanvas(playerPixelX, playerPixelY, '🧑', 28);
+        drawEmojiOnCanvas(cpuPixelX, cpuPixelY, '🤖', 28);
+
+    } // END of if a round has been played
+
+} // END of drawSineGraph
+
+
+// ============================================================
+// START OF MAIN
+// ============================================================
+
+
+initializeEventListeners();
+initializeGame();
+// RPS is a Rock Paper Scissors game that uses Math.sin on unit-circle angles to
+// determine each round's winner, with a live Canvas sine-wave graph and round tracking.
+
+
+// ============================================================
+// END OF PROGRAM
+// ============================================================
 
 
 /* End of Program Notes
 
-Rock paper scissors ideas
+Future feature ideas:
+    - Easy mode:   nearly 100% player win rate
+    - Medium mode: true random (33 / 33 / 33)
+    - Hard mode:   nearly 0% player win rate
+    - CPU vs CPU:  auto-plays two AIs against each other
+    - Wagering:    bet on the outcome before each round
 
-Challenge level
-
-Easy nearly 100% win rate
-Medium random
-33% win rate 33% lose 33% tie rate
-Hard nearly 0% win rate
-Auto plays 2 CPU's against each other
-
-Roast them if they lose
-
-Give then different rewards if they win
-
-Gambling
-
-Third input can bet on the outcome
-
-Inputs
-
-Game mode
-user input
-
--Isaac go do the program notes -Amelie
--ok I did it using ai becuase im lazy -Isaac
-
--Leo write the comments -Leo
--Yes they are now completed -Leo
-
--Amelie go fix the html and css -Amelie
--ok -Amelie
-
-
----
-
-Test Code
-
-// Reset rock paper scissors function
-function resetRPSGame() {
-  playerChoice = '';
-  playerChoiceLowercase = '';
-  playerChoiceConverted = '';
-  playerChoiceConfirmation = '';
-  computerChoice = '';
-  RPSGame();
-} // End of reset rock paper scissors function
 */
