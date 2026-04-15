@@ -1,492 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hasintbro RPS — Rock Paper Scissors Evolved</title>
-
-    <style>
-
-        /* ============================================================
-           RESET & CSS CUSTOM PROPERTIES
-        ============================================================ */
-        * {
-            margin:     0;
-            padding:    0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --clr-bg:      #1a0f26;
-            --clr-surface: #2d1b42;
-            --clr-panel:   #3b2456;
-            --clr-primary: #402954;
-            --clr-mid:     #7d6b8d;
-            --clr-accent:  #c084fc;
-            --clr-text:    #f0e6ff;
-            --clr-muted:   #b09cc4;
-            --clr-win:     #4ade80;
-            --clr-lose:    #f87171;
-            --radius:      8px;
-            --shadow:      0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        body {
-            font-family:    'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--clr-bg);
-            color:          var(--clr-text);
-            min-height:     100vh;
-            display:        flex;
-            flex-direction: column;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* ============================================================
-           SHARED BUTTON STYLES
-        ============================================================ */
-        .btn {
-            padding:       0.55rem 1.4rem;
-            border:        none;
-            border-radius: var(--radius);
-            font-size:     0.95rem;
-            font-weight:   600;
-            cursor:        pointer;
-            transition:    opacity 0.2s, transform 0.1s;
-        }
-
-        .btn:hover  { opacity: 0.85; }
-        .btn:active { transform: scale(0.97); }
-
-        .btn-primary   { background-color: var(--clr-accent);  color: #1a0f26; }
-        .btn-secondary { background-color: var(--clr-panel);   color: var(--clr-text); border: 1px solid var(--clr-mid); }
-        .btn-yes       { background-color: var(--clr-win);     color: #0a1a0a; }
-        .btn-no        { background-color: var(--clr-lose);    color: #1a0a0a; }
-
-        /* ============================================================
-           HEADER — Branding & Navigation
-        ============================================================ */
-        #site-header {
-            background-color: var(--clr-primary);
-            box-shadow:       var(--shadow);
-            padding:          1rem 2rem;
-            display:          flex;
-            justify-content:  space-between;
-            align-items:      center;
-            position:         sticky;
-            top:              0;
-            z-index:          100;
-        }
-
-        .header-brand {
-            display:     flex;
-            align-items: center;
-            gap:         0.75rem;
-        }
-
-        .brand-logo { font-size: 2.4rem; }
-
-        .brand-name {
-            font-size:      1.6rem;
-            font-weight:    700;
-            color:          var(--clr-accent);
-            letter-spacing: 0.05em;
-        }
-
-        .brand-tagline {
-            font-size:      0.78rem;
-            color:          var(--clr-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-        }
-
-        #main-nav ul {
-            list-style: none;
-            display:    flex;
-            gap:        1.25rem;
-        }
-
-        #main-nav a {
-            color:           var(--clr-text);
-            text-decoration: none;
-            font-size:       0.9rem;
-            padding:         0.3rem 0.7rem;
-            border-radius:   var(--radius);
-            transition:      background 0.2s;
-        }
-
-        #main-nav a:hover { background-color: var(--clr-panel); }
-
-        /* ============================================================
-           MAIN CONTENT
-        ============================================================ */
-        #main-content {
-            flex:           1;
-            display:        flex;
-            flex-direction: column;
-        }
-
-        /* ============================================================
-           SHARED SECTION STYLES
-        ============================================================ */
-        .game-section {
-            padding:       2rem 2.5rem;
-            border-bottom: 1px solid var(--clr-panel);
-        }
-
-        .section-title {
-            font-size:      0.82rem;
-            font-weight:    700;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color:          var(--clr-accent);
-            margin-bottom:  1.25rem;
-        }
-
-        /* ============================================================
-           SECTION 1 — Intro & Welcome
-        ============================================================ */
-        #intro-section {
-            background: linear-gradient(135deg, var(--clr-surface) 0%, var(--clr-primary) 100%);
-            text-align: center;
-            padding:    3rem 2rem;
-        }
-
-        #intro-section h2 {
-            font-size:     2.2rem;
-            margin-bottom: 0.4rem;
-        }
-
-        .player-greeting {
-            font-size:     1rem;
-            color:         var(--clr-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .player-greeting span {
-            color:       var(--clr-accent);
-            font-weight: 700;
-        }
-
-        #messageBox {
-            background-color: var(--clr-surface);
-            border:           1px solid var(--clr-mid);
-            border-radius:    var(--radius);
-            padding:          1.25rem 1.5rem;
-            max-width:        640px;
-            margin:           0 auto 1rem auto;
-            text-align:       left;
-            line-height:      1.75;
-            white-space:      pre-line;
-        }
-
-        #introStepFourUI { margin-top: 1.5rem; }
-
-        #introStepFourUI p {
-            color:         var(--clr-muted);
-            margin-bottom: 1rem;
-            font-size:     1.05rem;
-        }
-
-        /* ============================================================
-           SECTION 2 — Game Controls
-        ============================================================ */
-        #game-section { background-color: var(--clr-surface); }
-
-        #inputArea {
-            display:     flex;
-            gap:         0.75rem;
-            align-items: center;
-            flex-wrap:   wrap;
-        }
-
-        #inputArea label {
-            color:     var(--clr-muted);
-            font-size: 0.95rem;
-        }
-
-        #userInput {
-            background-color: var(--clr-bg);
-            border:           1px solid var(--clr-mid);
-            border-radius:    var(--radius);
-            color:            var(--clr-text);
-            padding:          0.55rem 1rem;
-            font-size:        1rem;
-            width:            100px;
-            outline:          none;
-            transition:       border-color 0.2s;
-        }
-
-        #userInput:focus { border-color: var(--clr-accent); }
-
-        #confirmArea {
-            display:        flex;
-            flex-direction: column;
-            gap:            0.75rem;
-        }
-
-        #confirmText {
-            font-style: italic;
-            color:      var(--clr-muted);
-        }
-
-        .confirm-buttons {
-            display: flex;
-            gap:     0.75rem;
-        }
-
-        /* ============================================================
-           SECTION 3 — Stats (Score & Round)
-        ============================================================ */
-        #stats-section { background-color: var(--clr-bg); }
-
-        .stats-grid {
-            display:               grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap:                   1rem;
-        }
-
-        .stat-card {
-            background-color: var(--clr-surface);
-            border:           1px solid var(--clr-panel);
-            border-radius:    var(--radius);
-            padding:          1rem 1.25rem;
-        }
-
-        .stat-label {
-            font-size:      0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color:          var(--clr-muted);
-            margin-bottom:  0.3rem;
-        }
-
-        .stat-value {
-            font-size:   1.3rem;
-            font-weight: 700;
-            color:       var(--clr-accent);
-        }
-
-        /* ============================================================
-           SECTION 4 — Graph
-        ============================================================ */
-        #graph-section { background-color: var(--clr-surface); }
-
-        .graph-description {
-            font-size:     0.88rem;
-            color:         var(--clr-muted);
-            margin-bottom: 1rem;
-            max-width:     580px;
-        }
-
-        #graph {
-            display:          block;
-            border:           1px solid var(--clr-mid);
-            border-radius:    var(--radius);
-            background-color: var(--clr-bg);
-            max-width:        100%;
-        }
-
-        /* ============================================================
-           END ROUND OVERLAY
-        ============================================================ */
-        #endRoundMessage {
-            position:         fixed;
-            inset:            0;
-            background-color: rgba(0, 0, 0, 0.8);
-            display:          flex;
-            flex-direction:   column;
-            align-items:      center;
-            justify-content:  center;
-            gap:              1.25rem;
-            z-index:          200;
-        }
-
-        #endRoundMessage h2 {
-            font-size: 2rem;
-            color:     var(--clr-accent);
-        }
-
-        #endRoundMessage p {
-            color:     var(--clr-muted);
-            font-size: 1.05rem;
-        }
-
-        /* ============================================================
-           FOOTER — Credits & Version
-        ============================================================ */
-        #site-footer {
-            background-color: var(--clr-primary);
-            border-top:       1px solid var(--clr-panel);
-            padding:          1.5rem 2rem;
-            text-align:       center;
-        }
-
-        .footer-brand {
-            font-size:     1rem;
-            font-weight:   700;
-            color:         var(--clr-accent);
-            margin-bottom: 0.4rem;
-        }
-
-        .footer-credits {
-            font-size:   0.83rem;
-            color:       var(--clr-muted);
-            line-height: 1.75;
-        }
-
-        .footer-version {
-            font-size:  0.72rem;
-            color:      var(--clr-mid);
-            margin-top: 0.4rem;
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-    <!-- ============================================================
-         HEADER — Hasintbro Branding & Main Navigation
-    ============================================================ -->
-    <header id="site-header">
-
-        <div class="header-brand">
-            <span class="brand-logo">🎮</span>
-            <div>
-                <h1 class="brand-name">Hasintbro</h1>
-                <p class="brand-tagline">Rock · Paper · Scissors · Evolved</p>
-            </div>
-        </div>
-
-        <nav id="main-nav" aria-label="Main Navigation">
-            <ul>
-                <li><a href="#intro-section">Intro</a></li>
-                <li><a href="#game-section">Play</a></li>
-                <li><a href="#stats-section">Score</a></li>
-                <li><a href="#graph-section">Graph</a></li>
-            </ul>
-        </nav>
-
-    </header>
-
-
-    <!-- ============================================================
-         MAIN CONTENT
-    ============================================================ -->
-    <main id="main-content">
-
-
-        <!-- SECTION 1: Intro & Welcome -->
-        <section id="intro-section" class="game-section">
-
-            <h2>Welcome to Hasintbro RPS</h2>
-            <p class="player-greeting">Playing as: <span id="username">Player</span></p>
-
-            <div id="messageBox" class="hidden">
-                <p id="messageText"></p>
-            </div>
-
-            <div id="introStepFourUI" class="hidden">
-                <p>Ready to step into the math?</p>
-                <button id="playBtn" class="btn btn-primary">&#9654; Play</button>
-            </div>
-
-        </section>
-
-
-        <!-- SECTION 2: Game Controls — Input & Confirmation -->
-        <section id="game-section" class="game-section">
-
-            <h2 class="section-title">Your Move</h2>
-
-            <div id="inputArea" class="hidden">
-                <label for="userInput">Enter R, P, or S:</label>
-                <input type="text" id="userInput" maxlength="8" placeholder="r / p / s" />
-                <button id="submitChoice" class="btn btn-primary">Submit</button>
-            </div>
-
-            <div id="confirmArea" class="hidden">
-                <p id="confirmText"></p>
-                <div class="confirm-buttons">
-                    <button id="yesBtn" class="btn btn-yes">&#10003; Yes</button>
-                    <button id="noBtn"  class="btn btn-no">&#10007; No</button>
-                </div>
-            </div>
-
-        </section>
-
-
-        <!-- SECTION 3: Stats — Score & Round Counter -->
-        <section id="stats-section" class="game-section">
-
-            <h2 class="section-title">Stats</h2>
-
-            <div class="stats-grid">
-
-                <div class="stat-card">
-                    <p class="stat-label">Round</p>
-                    <p class="stat-value" id="roundCounter">&#8212;</p>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width"/>
+        <title>Rock Paper Scissors</title>
+        <link href="../css/style.css" rel="stylesheet" type="text/css"/>
+        <link href="../images/purina_favicon.jpg" rel="icon" type="image/png"/>
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                <input type="checkbox" id="menu-toggle"/>
+                <label id="trigger" for="menu-toggle"></label>
+                <label id="burger" for="menu-toggle"></label>
+                <ul id="menu">
+                    <li><a href="">Home</a></li>
+                    <li><a href="https://shop.hasbro.com/en-ca" target="_blank">Store</a></li>
+                    <li><a href="https://corporate.hasbro.com/en-us" target="_blank">About</a></li>
+                    <li><a href="https://newsroom.hasbro.com/contact-us" target="_blank">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <h1 id="Title">
+                ROCK PAPER SCISSORS
+            </h1>
+        </header>
+
+        <main>
+            <h2>Hi <span id="username"></span>!</h2>
+
+            <div id="roundCounter">Round: Not Started</div>
+
+            <div id="scoreDisplay">Score -> You: 0 | CPU: 0 | Draws: 0</div>
+            
+            <div id="gameUI">
+                <div id="messageBox">
+                    <p id="messageText"></p>
                 </div>
 
-                <div class="stat-card">
-                    <p class="stat-label">Score</p>
-                    <p class="stat-value" id="scoreDisplay">You: 0 | CPU: 0 | Draws: 0</p>
+                <div id="inputArea" class="hidden">
+                    <input type="text" id="userInput" placeholder="Type R, P, or S">
+                    <button id="submitChoice">Submit</button>
                 </div>
 
+                <div id="confirmArea" class="hidden">
+                    <p id="confirmText"></p>
+                    <button id="yesBtn">Yes</button>
+                    <button id="noBtn">No</button>
+                </div>
+
+                <div id="endRoundMessage" class="hidden">
+                    <p>Thanks for playing Hasintbro RPS! Scores have been reset.</p>
+                    <button id="playAgainBtn">Play Again</button>
+                </div>
+
+                <div id="introStepFourUI" class="hidden">
+                    <h2>Let's start!</h2>
+                    <button id="playBtn">PLAY</button>
+                </div>
+            </div>            
+            <div id="graph-container">
+                <canvas id="graph" width="600" height="400"></canvas>
             </div>
+ 
+        </main>
+         
 
-        </section>
-
-
-        <!-- SECTION 4: Graph — Sine Wave Visualizer -->
-        <section id="graph-section" class="game-section">
-
-            <h2 class="section-title">Sin Wave Visualizer</h2>
-
-            <p class="graph-description">
-                Rock, Paper, and Scissors each map to a fixed angle on the unit circle.
-                The winner is decided by <em>sin(CPU angle &#8722; your angle)</em>.
-                Green line = you win &nbsp;|&nbsp; Red = CPU wins &nbsp;|&nbsp; Grey = draw.
-            </p>
-
-            <canvas id="graph" width="560" height="300"></canvas>
-
-        </section>
+        <footer>
+            <marquee scrollamount="25">
+                <p class="homePageText" id="authorCredits"> 
+                    Made with Amelie's laptop by Amelie, Isaac, and Leo
+                </p>
+            </marquee>
+        </footer>
 
 
-    </main>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="../js/script.js" defer></script>
 
-
-    <!-- END ROUND OVERLAY (fixed, shown on top when round ends) -->
-    <div id="endRoundMessage" class="hidden">
-        <h2>Round Over!</h2>
-        <p>Thanks for playing Hasintbro RPS.</p>
-        <p id="finalScoreSummary"></p>
-        <button id="playAgainBtn" class="btn btn-primary">Play Again</button>
-    </div>
-
-
-    <!-- ============================================================
-         FOOTER — Authors, Version, Credits
-    ============================================================ -->
-    <footer id="site-footer">
-        <p class="footer-brand">Hasintbro RPS</p>
-        <p class="footer-credits">
-            Rock · Paper · Scissors · Evolved with Trigonometry<br>
-            Amelie (Ruohan) Shen &nbsp;|&nbsp; Leo Hougaard &nbsp;|&nbsp; Isaac Leon Cauldern
-        </p>
-        <p class="footer-version">Version 4.0 &nbsp;&#183;&nbsp; Last Edited: 02/20/2026</p>
-    </footer>
-
-
-    <!-- defer: script runs after DOM is fully parsed — no DOMContentLoaded race -->
-    <script src="rps.js" defer></script>
-
-</body>
-
+    </body>
 </html>
