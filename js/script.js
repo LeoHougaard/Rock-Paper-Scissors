@@ -1,10 +1,10 @@
 
-/*
+/* 
 
 	Title: RPS
 	Program Summary: This is rock paper scissors but more complicated...
-
-	Important (KEY) Program Elements Used:
+	
+	Important (KEY) Program Elements Used: 
 
   prompt(), alert(), and confirm()
   functions
@@ -29,9 +29,9 @@
   ternary
 
 	Authors (Teammates/Owners/Project Roles): Amelie (Ruohan) Shen, Leo Hougaard, and Isaac Leon Cauldern
-
+	
 	Version (Project Iteration): 4.0
-
+	
 	Date (Last Edited): 02/20/2026
 
 */
@@ -40,56 +40,22 @@
 
 
 
-// Start of Functions
+// Start of Functions           
 
 
 
 
 
 /*
-Summary: The play rock paper scissors function
+Summary: The play rock paper scissors function 
 @parms: none
-@return: None (Void) - This is the page entry point that resets the current intro step and plays the next button function
+@return: None (Void) - This is the main entry point that resets the current intro step and plays the next button function
 */
 function playRPS() {
-  playGame("page");
+  currentIntroStep = 0; // reset step index
+  showNextIntroStep();
 } //End of the play rock paper scissors function
 
-
-
-
-
-/*
-Summary: Starts the console version of rock paper scissors.
-@parms: none
-@return: None (Void) - Triggers the shared game manager in console mode.
-*/
-function playConsoleRPS() {
-  playGame("console");
-} // END of play console rock paper scissors function
-
-
-
-
-/*
-Summary: Program manager for the page and console versions of rock paper scissors.
-@parms: selectedGameMode
-@return: None (Void) - Sends control to either the HTML intro or the console intro.
-*/
-function playGame(selectedGameMode = "page") {
-  gameMode = selectedGameMode;
-  currentIntroStep = 0; // reset step index
-
-  if (gameMode === "console") {
-    welcomeRPS();
-    introRPS();
-    explanationRPS();
-    startRoundSession();
-    return;
-  } // END of console game mode
-
-  showNextIntroStep();
-} // END of program manager function
 
 
 
@@ -121,32 +87,20 @@ function showNextIntroStep() {
 
   introSteps[currentIntroStep](); // Run current step
 
-  if (existingNextBtn) {
-    existingNextBtn.remove(); // Remove old Next button
-  } // END of old next button check
+  if (existingNextBtn) existingNextBtn.remove(); // Remove old Next button
 
   // Only add "Next" button if not the last step
   if (currentIntroStep < introSteps.length - 1) {
     nextBtn.id = "nextBtn";
     nextBtn.textContent = "Next";
-    nextBtn.addEventListener("click", goToNextIntroStep);
+    nextBtn.addEventListener("click", () => {
+      currentIntroStep++;
+      showNextIntroStep();
+    });
     msgBox.appendChild(nextBtn); // append inside messageBox
-  } // END of next button check
+  }
 } //End of show intro step function
 
-
-
-
-
-/*
-Summary: Advances the intro one step when the next button is clicked.
-@parms: none
-@return: None (Void) - Updates currentIntroStep and displays the next intro message.
-*/
-function goToNextIntroStep() {
-  currentIntroStep++;
-  showNextIntroStep();
-} // END of go to next intro step function
 
 
 
@@ -158,22 +112,14 @@ Summary: manages the transition to the fourth step of an introductory sequence
 */
 function introStepFour() {
     msgBox.classList.add("hidden"); // hide explanation from prev step
-    playUI.classList.remove("hidden"); // remove hidden class
+    playUI.classList.remove("hidden"); // remove hidden class 
+
+    // Play button click
+    document.getElementById("playBtn").onclick = () => {
+        playUI.style.display = "none"; // Hide the intro UI
+        startRoundSession();
+    };
 } //End of intro step four function
-
-
-
-
-/*
-Summary: Starts the first round when the page play button is clicked.
-@parms: none
-@return: None (Void) - Hides the intro controls and starts a round session.
-*/
-function playButtonClicked() {
-  gameMode = "page";
-  playUI.style.display = "none"; // Hide the intro UI
-  startRoundSession();
-} // END of play button clicked function
 
 
 
@@ -233,10 +179,10 @@ Summary: Explanation rock paper scissors function
 */
 function explanationRPS() {
   showMessage(
-    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter R, P, S, rock, paper, or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
+    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter rock paper or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
   );
   console.log(
-    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter R, P, S, rock, paper, or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
+    `The math will resolve all your competitions.\n\nHow to play RPS: 1. Enter rock paper or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
   );
   console.log(
     '%cCome back any time you need a good game of rock paper scissors!',
@@ -256,31 +202,17 @@ Summary: askes the user to enter a move
 function askForChoice() {
   showMessage("Type R, P, or S", true); // Show the message and keep input visible
 
-  if (gameMode === "console") {
-    playerChoice = prompt("Type R, P, or S");
-    userChoiceHandler(playerChoice);
-    return;
-  } // END of console input check
-
   inputArea.classList.remove("hidden"); // Show the input field
   userInput.value = ''; // Clear previous input
 
+  // Attach submit button listener
+  document.getElementById("submitChoice").onclick = function () {
+    const value = userInput.value;
+    inputArea.classList.add("hidden"); // hide after submission
+    userChoiceHandler(value);          // process choice
+  };
 } //End of ask for choice function
 
-
-
-
-
-/*
-Summary: Handles the page submit button for player choice.
-@parms: none
-@return: None (Void) - Sends the text input value to the shared choice handler.
-*/
-function submitChoiceClicked() {
-  const inputValue = userInput.value;
-  inputArea.classList.add("hidden"); // hide after submission
-  userChoiceHandler(inputValue); // process choice
-} // END of submit choice clicked function
 
 
 
@@ -291,52 +223,29 @@ Summary: display a confermation of yes no
 @return: None
 */
 function askYesNo(confirmMessage, callbackYes, callbackNo, isFullMessage = false) {
-  if (gameMode === "console") {
-    if (confirm(isFullMessage ? confirmMessage : `Do you want to play "${confirmMessage}"?`)) {
-      callbackYes();
-    } else {
-      callbackNo();
-    } // END of console confirm choice
-    return;
-  } // END of console confirmation check
+  // function var
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+
+
 
   confirmText.innerText = isFullMessage ? confirmMessage : `Do you want to play "${confirmMessage}"?`;   // If isFullMessage is true, use the message as-is. Otherwise, prepend "Do you want to play"
 
   confirmArea.classList.remove("hidden");
 
-  yesButtonCallback = callbackYes;
-  noButtonCallback = callbackNo;
+  yesBtn.onclick = null;
+  noBtn.onclick = null;
+
+  yesBtn.onclick = () => {
+      confirmArea.classList.add("hidden");
+      callbackYes();
+  };
+
+  noBtn.onclick = () => {
+      confirmArea.classList.add("hidden");
+      callbackNo();
+  };
 } // end of function
-
-
-
-
-/*
-Summary: Runs the stored yes callback for the current confirmation.
-@parms: none
-@return: None (Void) - Hides the confirmation area and runs yesButtonCallback.
-*/
-function yesButtonClicked() {
-  confirmArea.classList.add("hidden");
-  if (typeof yesButtonCallback === "function") {
-    yesButtonCallback();
-  } // END of yes callback check
-} // END of yes button clicked function
-
-
-
-
-/*
-Summary: Runs the stored no callback for the current confirmation.
-@parms: none
-@return: None (Void) - Hides the confirmation area and runs noButtonCallback.
-*/
-function noButtonClicked() {
-  confirmArea.classList.add("hidden");
-  if (typeof noButtonCallback === "function") {
-    noButtonCallback();
-  } // END of no callback check
-} // END of no button clicked function
 
 
 
@@ -344,29 +253,20 @@ function noButtonClicked() {
 
 /*
 Summary: Validates user input, maps choices to game data, and manages the confirmation/gameplay loop.
-@parms: submittedPlayerChoice
+@parms: playerChoice
 @return: Returns "quit" for null input or "retry" for invalid input
-*/
-function userChoiceHandler(submittedPlayerChoice) {
+*/ 
+function userChoiceHandler(playerChoice) {
   // input validation
-  if  (submittedPlayerChoice === null) {
+  if  (playerChoice === null) {
     alert("User cancelled the prompt.");
     alert('Click "play" to try again.');
     console.log("User cancelled the prompt.");
     console.log('Click "play" to try again.');
     return "quit";
   }
-
-  if (submittedPlayerChoice.trim() === "") {
-    console.log("That's not a legal play.");
-    console.log("Pick rock paper or scissors.");
-    alert("That's not a legal play.");
-    alert("Pick rock paper or scissors.");
-    askForChoice();
-    return "retry";
-  } // END of blank input check
-
-  playerChoiceLowercase = submittedPlayerChoice.trim().toLowerCase();
+  
+  playerChoiceLowercase = playerChoice.toLowerCase();
   playerChoiceConverted = playerChoiceLowercase.charAt(0);
 
   switch (playerChoiceConverted) {
@@ -390,10 +290,10 @@ function userChoiceHandler(submittedPlayerChoice) {
       console.log("Pick rock paper or scissors.");
       alert("That's not a legal play.");
       alert("Pick rock paper or scissors.");
-      askForChoice();
+      askForChoice()
       return "retry";
-  } // END of input validation
-
+  } // end of input validation
+    
   showMessage(`Confirm your play:`);
 
   // Ask user to confirm choice
@@ -411,10 +311,10 @@ function userChoiceHandler(submittedPlayerChoice) {
       // Ask if they want to play again
       askYesNo(
         "Do you want to continue the round?",
-        () => {
+        () => { 
           roundNumber++;
           updateRoundDisplay();
-          RPSGame();
+          RPSGame(); 
         },
         () => { endRound(); },
         true
@@ -432,7 +332,7 @@ function userChoiceHandler(submittedPlayerChoice) {
 
 
 /*
-Summary: Computer choice collector
+Summary: Computer choice collector 
 @parms: var name or expression and datatyp
 @return: String - Returns "play", "retry", or "quit" based on user input and confirmations.
 */
@@ -450,8 +350,8 @@ function computerChoiceCollector() {
 
 
 /*
-Summary: Determine Winner function
-@parms: trigResult,
+Summary: Determine Winner function 
+@parms: trigResult, 
 @return: String - Returns the winner of the round: "player", "computer", or "tie".
 */
 function normalDetermineWinner() {
@@ -476,7 +376,7 @@ function normalDetermineWinner() {
 
 
 /*
-Summary: What happened function
+Summary: What happened function 
 @parms: gameLog
 @return: None - Displays the summary of the current moves via alert.
 */
@@ -490,7 +390,7 @@ function whatHappened() {
 
 
 /*
-Summary: Game score log function
+Summary: Game score log function 
 @parms: None
 @return: None - Logs the current scoreboard to the console.
 */
@@ -503,7 +403,7 @@ function gameScoreLog() {
 
 
 /*
-Summary: You win function
+Summary: You win function 
 @parms: var name or expression and datatype
 @return: None - Displays the result message to the user.
 */
@@ -517,7 +417,7 @@ function youWin() {
 
 
 /*
-Summary: You draw function
+Summary: You draw function 
 @parms: var name or expression and datatype
 @return: None - Displays the result message to the user.
 */
@@ -573,48 +473,19 @@ function endRound() {
 
   endMsg.classList.remove("hidden");
 
-  if (gameMode === "console") {
-    return;
-  } // END of console end round check
+  document.getElementById("playAgainBtn").onclick = () => {
+  endMsg.classList.add("hidden");
+  startRoundSession();
+};
 
 } // end of end round function
 
 
 
 
-/*
-Summary: Starts another HTML round after the play again button is clicked.
-@parms: none
-@return: None (Void) - Hides the end message and starts a round session.
-*/
-function playAgainClicked() {
-  gameMode = "page";
-  endMsg.classList.add("hidden");
-  startRoundSession();
-} // END of play again clicked function
-
-
-
 
 /*
-Summary: Connects the main HTML controls after the page has loaded.
-@parms: none
-@return: None (Void) - Adds event listeners for page buttons.
-*/
-function connectPageControls() {
-  document.getElementById("playBtn").addEventListener("click", playButtonClicked);
-  document.getElementById("submitChoice").addEventListener("click", submitChoiceClicked);
-  document.getElementById("playAgainBtn").addEventListener("click", playAgainClicked);
-  document.getElementById("yesBtn").addEventListener("click", yesButtonClicked);
-  document.getElementById("noBtn").addEventListener("click", noButtonClicked);
-} // END of connect page controls function
-
-
-
-
-
-/*
-Summary: Thank you function
+Summary: Thank you function 
 @parms: var name or expression and datatype
 @return: None - Logs a closing message.
 */
@@ -627,12 +498,12 @@ Summary: Thank you function
 
 
 /*
-Summary: Draw emoji function
+Summary: Draw emoji function 
 @parms: var name or expression and datatype
 @return: None - Draws a specific emoji to the HTML5 Canvas.
 */
 function drawEmoji(x, y, emoji, size = 24) {
-  ctx.font = `${size}px serif`;
+  ctx.graphFont = `${size}px serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(emoji, x, y);
@@ -643,7 +514,7 @@ function drawEmoji(x, y, emoji, size = 24) {
 
 
 /*
-Summary: Start of draw graph function
+Summary: Start of draw graph function 
 @parms: var name or expression and datatyp
 @return: None - Renders the sine wave, points, and connection lines on the Canvas.
 */
@@ -665,11 +536,8 @@ function drawGraph() {
   for (let x = -Math.PI * 2; x <= Math.PI * 2; x += 0.01) {
     const canvasX = (x + Math.PI * 2) * (width / (Math.PI * 4));
     const canvasY = height / 2 - Math.sin(x) * 100;
-    if (x === -Math.PI * 2) {
-      ctx.moveTo(canvasX, canvasY);
-    } else {
-      ctx.lineTo(canvasX, canvasY);
-    } // END of sine wave start check
+    if (x === -Math.PI * 2) ctx.moveTo(canvasX, canvasY);
+    else ctx.lineTo(canvasX, canvasY);
   }
   ctx.stroke();
 
@@ -687,13 +555,9 @@ function drawGraph() {
   ) {
     ctx.beginPath();
 
-    if (lastWinner === "player") {
-      ctx.strokeStyle = "green";
-    } else if (lastWinner === "computer") {
-      ctx.strokeStyle = "red";
-    } else {
-      ctx.strokeStyle = "gray";
-    } // END of winner color check
+    if (lastWinner === "player") ctx.strokeStyle = "green";
+    else if (lastWinner === "computer") ctx.strokeStyle = "red";
+    else ctx.strokeStyle = "gray";
 
     ctx.lineWidth = 3;
 
@@ -730,17 +594,15 @@ function drawGraph() {
 
 /*
 Summary: Updates and displays a message box while managing UI visibility.
-@parms: displayMessageText, shouldKeepInputVisible
+@parms: messageText, keepInputVisible
 @return: None
 */
-function showMessage(displayMessageText, shouldKeepInputVisible = false) {
+function showMessage(messageText, keepInputVisible = false) {
   confirmArea.classList.add("hidden"); // hide confirm area
 
-  if (!shouldKeepInputVisible) {
-    inputArea.classList.add("hidden"); // Only hide inputArea if keepInputVisible is false
-  } // END of keep input visible check
+  if (!keepInputVisible) inputArea.classList.add("hidden");   // Only hide inputArea if keepInputVisible is false
 
-  msgText.innerText = displayMessageText;
+  msgText.innerText = messageText;
   msgBox.classList.remove("hidden");
 } // end of show message function
 
@@ -788,7 +650,7 @@ Summary: Updates the UI text to reflect current game standings.
 @return: None
 */
 function updateScoreDisplay() {
-  scoreText.innerText =
+  scoreText.innerText = 
     `Score -> You: ${gameScore.playerWin} | CPU: ${gameScore.computerWin} | Draws: ${gameScore.gameDraw}`;
 } // end of update score display function
 
@@ -797,16 +659,13 @@ function updateScoreDisplay() {
 
 
 /*
-Summary: Capitalize First Letter Function
-@parms: originalString
+Summary: Capitalize First Letter Function 
+@parms: str
 @return: String - Returns the input string with the first character capitalized.
 */
-capitalizeFirstLetter = (originalString) => {
-  if (!originalString) {
-    return '';
-  } // END of empty string check
-
-  return originalString.charAt(0).toUpperCase() + originalString.slice(1);
+capitalizeFirstLetter = (str) => { 
+  if (!str) return ''; 
+  return str.charAt(0).toUpperCase() + str.slice(1); 
 } // End of Capitalize First Letter Function
 
 
@@ -832,8 +691,8 @@ function userNameCollector() {
     userNameCapitalized = "Mr. Vatougios";
     alert('Username set to default.');
     console.log('Username set to default.');
-  }
-
+  } 
+  
   usernameElement = document.getElementById("username");
   usernameElement.innerHTML = userNameCapitalized;
 } // End of assigning user name function
@@ -853,13 +712,12 @@ function userNameCollector() {
 
 
 // intro variables
-let gameMode = "page";
 const playUI = document.getElementById("introStepFourUI");
 let introSteps = [
   welcomeRPS,
   introRPS,
   explanationRPS,
-  introStepFour
+  introStepFour 
 ];
 let currentIntroStep = 0;
 
@@ -867,6 +725,10 @@ let currentIntroStep = 0;
 var userName = '';
 let usernameElement; // html element of username
 let userNameCapitalized; // capitalized username
+let str; // to capitalize any string
+
+// ask another question prompting
+let tryAgain;
 
 // html messages variables
 const msgBox = document.getElementById("messageBox");
@@ -874,8 +736,11 @@ const msgText = document.getElementById("messageText");
 const inputArea = document.getElementById("inputArea");
 const confirmArea = document.getElementById("confirmArea");
 const confirmText = document.getElementById("confirmText");
-let yesButtonCallback;
-let noButtonCallback;
+
+let classList;
+let innerText;
+let messageText;
+let keepInputVisible;
 
 // user input variables
 const userInput = document.getElementById("userInput");
@@ -903,6 +768,9 @@ const endMsg = document.getElementById("endRoundMessage"); // end of round varia
 const scoreText = document.getElementById("scoreDisplay");
 let lastWinner = null;
 let gameScore = { playerWin: 0, computerWin: 0, gameDraw: 0 };
+let playerWin;
+let computerWin;
+let gameDraw;
 
 // graph variables
 const canvas = document.getElementById("graph");
@@ -920,31 +788,35 @@ const rpsEmoji = {
   scissors: "✂️"
 };
 const graphAmplitude = 100;
+let graphFont;
+let textAlign
+let textBaseline;
+let strokeStyle;
 
 
 // ASCII art
-const ASCIITitle = String.raw`
+const ASCIITitle = String.raw`                                                                                                         
      _______
----'   _____)           _______  _______    _______  ____ ___
-        (_____)       //       \/        \/        \/    /   \
-        (_____)      //    /   /    /    /         /         /
-         (____)     /        _/    /    /       --/        _/
----._____(___)      \____/___/\________/\________/\____/___/ 
+---'   _____)           _______  _______    _______  ____ ___     
+        (_____)       //       \/       \\//       \/    /   \
+        (_____)      //    /   /    /   ///        /         /
+         (____)     /        _/    /    /       --//       _/ 
+---._____(___)      \____/___/\________/\________/\\___/___/  
 
      __________
----'    ______/_____        ▄▄▄▄▄▄▄     ▄▄▄▄   ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄
+---'    ______/_____        ▄▄▄▄▄▄▄     ▄▄▄▄   ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
            __________)      ███▀▀███▄ ▄██▀▀██▄ ███▀▀███▄ ███▀▀▀▀▀ ███▀▀███▄
           ____________)     ███▄▄███▀ ███  ███ ███▄▄███▀ ███▄▄    ███▄▄███▀
-         ____________)      ███▀▀▀▀   ███▀▀███ ███▀▀▀▀   ███      ███▀▀██▄
+         ____________)      ███▀▀▀▀   ███▀▀███ ███▀▀▀▀   ███      ███▀▀██▄ 
 ---._____________)          ███       ███  ███ ███       ▀███████ ███  ▀███
 
      __________
----'   _______/_____         __    ___ __  __   __    ___   ____   __
+---'   _______/_____         __    ___ __  __   __    ___   ____   __ 
              ________)      (( \  //   || (( \ (( \  // \\  || \\ (( \
-          ____________)      \\  ((    ||  \\   \\  ((   )) ||_//  \\
+          ____________)      \\  ((    ||  \\   \\  ((   )) ||_//  \\ 
          (____)             \_))  \\__ || \_)) \_))  \\_//  || \\ \_))
----._____(___)
-`;
+---._____(___)                                                                                   
+`;                                                                                                 
 
 
 
@@ -955,9 +827,7 @@ const ASCIITitle = String.raw`
 
 
 // Start of Main
-window.addEventListener("load", connectPageControls);
-window.addEventListener("load", playConsoleRPS);
-// rps is started once in console mode after the HTML loads so the page elements exist before JavaScript uses them.
+window.addEventListener("load", playRPS);
 // End  of Main
 
 
