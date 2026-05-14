@@ -39,7 +39,6 @@
 
 
 
-
 // Start of Functions           
 
 
@@ -179,10 +178,10 @@ Summary: Explanation rock paper scissors function
 */
 function explanationRPS() {
   showMessage(
-    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter rock paper or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
+    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`
   );
   console.log(
-    `The math will resolve all your competitions.\n\nHow to play RPS: 1. Enter rock paper or scissors\n2. Find out if you win, lose, or draw\n3. Play again`
+    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`
   );
   console.log(
     '%cCome back any time you need a good game of rock paper scissors!',
@@ -203,17 +202,97 @@ function askForChoice() {
   showMessage("Type R, P, or S", true); // Show the message and keep input visible
 
   inputArea.classList.remove("hidden"); // Show the input field
-  userInput.value = ''; // Clear previous input
+  userInput.valueRps = ''; // Clear previous input
 
   // Attach submit button listener
   document.getElementById("submitChoice").onclick = function () {
-    const value = userInput.value;
+    const valueRps = userInput.valueRps;
     inputArea.classList.add("hidden"); // hide after submission
-    userChoiceHandler(value);          // process choice
+    userChoiceHandler(valueRps);          // process choice
   };
 } //End of ask for choice function
 
 
+
+
+function askForPlay() {
+  do {
+      userPlay = prompt("Type R, P, or S");
+      
+      if (userAge === null) {
+        if (confirm("Do you want to exit the round?")) {
+          console.log("User has stopped playing.");
+          return;
+        } else {
+          // auto re-prompts
+        }
+      }
+    } while((userAge === null) || (userAge.trim() === ""));
+
+  playHandler(userPlay);
+} //End of ask for choice function
+
+
+/*
+Summary: Validates age and sleep inputs, assigns recommended sleep based on age, and triggers sleep debt calculation
+@parms: ageInput (String — age entered by user), sleepInput (String — comma-separated sleep hours)
+@return: returns undefined early on failure; otherwise, initiates the next function
+*/
+function playHandler(userPlay) {
+  // function var
+  // end of function var
+
+
+
+    // input validation
+  if  (userPlay === null) {
+    alert("User cancelled the prompt.");
+    alert('Click "play" to try again.');
+    console.log("User cancelled the prompt.");
+    console.log('Click "play" to try again.');
+    return "quit";
+  }
+  
+  playerChoiceLowercase = userPlay.toLowerCase();
+  playerChoiceConverted = playerChoiceLowercase.charAt(0);
+
+  switch (playerChoiceConverted) {
+    case 'r':
+      playerChoiceConfirmation = 'rock';
+      playerChoiceTrig = rpsAngles.rock;
+      break;
+
+    case 'p':
+      playerChoiceConfirmation = 'paper';
+      playerChoiceTrig = rpsAngles.paper;
+      break;
+
+    case 's':
+      playerChoiceConfirmation = 'scissors';
+      playerChoiceTrig = rpsAngles.scissors;
+      break;
+
+    default:
+      console.log("That's not a legal play.");
+      console.log("Pick rock paper or scissors.");
+      alert("That's not a legal play.");
+      alert("Pick rock paper or scissors.");
+      askForPlay()
+      return "retry";
+  } // end of input validation
+
+  confirmMessage =`Did you want to play ${playerChoiceConverted}?`;
+  console.log(`You chose ${playerChoiceConverted}`);
+  if (confirm(confirmMessage)) {
+    askForPlay();
+  } else if (confirm("Do you want to re enter values?")) {
+    console.log("User has cancelled the first prompt but decided to try again.");
+    askForSleep();
+  } else {
+    console.log("User has canceled the prompt.");
+    return;
+  }
+} //End of sleepHandler funtion
 
 
 
@@ -798,10 +877,10 @@ let strokeStyle;
 const ASCIITitle = String.raw`                                                                                                         
      _______
 ---'   _____)           _______  _______    _______  ____ ___     
-        (_____)       //       \/       \\//       \/    /   \
-        (_____)      //    /   /    /   ///        /         /
-         (____)     /        _/    /    /       --//       _/ 
----._____(___)      \____/___/\________/\________/\\___/___/  
+        (_____)       //       \/        \/        \/    /   \
+        (_____)      //    /   /    /    /         /         /
+         (____)     /        _/    /    /       --/        _/ 
+---._____(___)      \____/___/\________/\________/\____/___/  
 
      __________
 ---'    ______/_____        ▄▄▄▄▄▄▄     ▄▄▄▄   ▄▄▄▄▄▄▄    ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ 
