@@ -175,6 +175,7 @@ function askForChoiceConsole() {
       if (userPlay === null) {
         if (confirm("Do you want to exit the round?")) {
           console.log("User has stopped playing.");
+          endRound();
           return;
         } else {
           continue;
@@ -270,7 +271,7 @@ function userChoiceHandlerConsole(userPlay) {
       return askForChoiceConsole();
 
     } else {
-      thankYou();
+      endRound();
     }
   } else {
     return askForChoiceConsole();
