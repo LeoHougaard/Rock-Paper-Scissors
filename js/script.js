@@ -30,9 +30,9 @@
 
 	Authors (Teammates/Owners/Project Roles): Amelie (Ruohan) Shen, Leo Hougaard, and Isaac Leon Cauldern
 	
-	Version (Project Iteration): 4.0
+	Version (Project Iteration): 5.0
 	
-	Date (Last Edited): 02/20/2026
+	Date (Last Edited): 05/15/2026
 
 */
 
@@ -73,21 +73,8 @@ function chooseGameVersion() {
     askForChoiceConsole();
   } else {
     startRoundSession();
-  }
+  } // end of choosing game mode if
 } // End of choose game version function
-
-
-
-
-
-/*
-Summary: The rock paper scissors function
-@parms: none
-@return: None (Void) - only runs ask for choice
-*/
-function RPSGame() {
-  askForChoice();
-} // End of rock paper scissors game function
 
 
 
@@ -205,13 +192,23 @@ function askForChoice() {
   userInput.value = ''; // Clear previous input
 
   // Attach submit button listener
-  document.getElementById("submitChoice").onclick = function () {
-    const playerInput = userInput.value;
-    inputArea.classList.add("hidden"); // hide after submission
-    userChoiceHandler(playerInput);          // process choice
-  };
-} //End of ask for choice function
+  document.getElementById("submitChoice").onclick = submitChoiceHandler;
+} // ask for choice function
 
+
+
+
+
+/*
+Summary: Handles the submit button click for the player’s choice input.
+@param: None
+@return: None - Reads user input, hides input area, and passes value to userChoiceHandler.
+*/
+function submitChoiceHandler() {
+  const playerInput = userInput.value;
+  inputArea.classList.add("hidden");
+  userChoiceHandler(playerInput);
+} // end of submit choice handler 
 
 
 
@@ -272,10 +269,10 @@ function userChoiceHandlerConsole(userPlay) {
 
     } else {
       endRound();
-    }
+    } // end of continue round if
   } else {
     return askForChoiceConsole();
-  }
+  } // end of confirm message if
 } //End of play handler function
 
 
@@ -294,7 +291,7 @@ function userChoiceHandler(playerChoice) {
     console.log("User cancelled the prompt.");
     console.log('Click "play" to try again.');
     return "quit";
-  }
+  } // end of quit if null if
   
   playerChoiceLowercase = playerChoice.trim().toLowerCase();
   playerChoiceConverted = playerChoiceLowercase.charAt(0);
@@ -344,7 +341,7 @@ function userChoiceHandler(playerChoice) {
         () => { 
           roundNumber++;
           updateRoundDisplay();
-          RPSGame(); 
+          askForChoice(); 
         },
         () => { endRound(); },
         true
@@ -369,26 +366,60 @@ function askYesNo(confirmMessage, callbackYes, callbackNo, isFullMessage = false
   // Function variables
   const yesBtn = document.getElementById("yesBtn");
   const noBtn = document.getElementById("noBtn");
+  // end of function var
 
 
 
-  confirmText.innerText = isFullMessage ? confirmMessage : `Do you want to play "${confirmMessage}"?`;   // If isFullMessage is true, use the message as-is. Otherwise, prepend "Do you want to play"
+  pendingYesAction = callbackYes;
+  pendingNoAction = callbackNo;
+
+  if (isFullMessage) {
+    confirmText.innerText = confirmMessage;
+  } else {
+    confirmText.innerText = `Do you want to play "${confirmMessage}"?`;
+  } // end of if isFullMessage is true, use the message as-is. Otherwise, prepend "Do you want to play" if
 
   confirmArea.classList.remove("hidden");
 
-  yesBtn.onclick = null;
-  noBtn.onclick = null;
-
-  yesBtn.onclick = () => {
-      confirmArea.classList.add("hidden");
-      callbackYes();
-  };
-
-  noBtn.onclick = () => {
-      confirmArea.classList.add("hidden");
-      callbackNo();
-  };
+  yesBtn.onclick = yesHandler;
+  noBtn.onclick = noHandler;
 } // end of function
+
+
+
+
+
+/*
+Summary: Handles the "Yes" confirmation button click. Triggers the stored yes action and hides the confirmation area.
+@param: None
+@return: None - Executes the pending yes callback and updates UI state.
+*/
+function yesHandler() {
+  confirmArea.classList.add("hidden");
+
+  if (pendingYesAction !== null) {
+    pendingYesAction();
+  } // end of checking pending yes action value
+} // end of no handler
+
+
+
+
+
+/*
+Summary: Handles the "No" confirmation button click. Triggers the stored no action and hides the confirmation area.
+@param: None
+@return: None - Executes the pending no callback and updates UI state.
+*/
+function noHandler() {
+  confirmArea.classList.add("hidden");
+
+  if (pendingNoAction !== null) {
+    pendingNoAction();
+  } // end of checking pending no action value
+} // end of no handler
+
+
 
 
 
@@ -401,7 +432,6 @@ function computerChoiceCollector() {
   randomNumber = Math.floor(Math.random()*3);
 
   computerChoice = ['rock', 'paper', 'scissors'];
-  //computerChoiceTrig = [0, (2 * Math.PI) / 3, (4 * Math.PI) / 3];
   computerChoiceTrig = computerChoice[randomNumber];
   computerChoiceTrig = rpsAngles[computerChoiceTrig];
 } // End of computer choice collector
@@ -429,7 +459,7 @@ function normalDetermineWinner() {
     youDraw();
     gameScore.gameDraw++;
     return "tie";
-  }
+  } // end of deciding winner if 
 } // End of determine winner function
 
 
@@ -526,7 +556,7 @@ function endRound() {
   playerChoiceConfirmation = '';
   computerChoice = '';
 
-  //reset round number
+  // reset round number
   roundNumber = 0;
   updateRoundDisplay();
 
@@ -537,13 +567,22 @@ function endRound() {
 
   endMsg.classList.remove("hidden");
 
-  document.getElementById("playAgainBtn").onclick = () => {
-  endMsg.classList.add("hidden");
-  startRoundSession();
-};
-
+  document.getElementById("playAgainBtn").onclick = handlePlayAgain;
 } // end of end round function
 
+
+
+
+
+/*
+Summary: Handles the "Play Again" button click by hiding the end screen and restarting a new round session.
+@param: None
+@return: None - Updates UI state and calls startRoundSession().
+*/
+function handlePlayAgain() {
+  endMsg.classList.add("hidden");
+  startRoundSession();
+} // end of handle play again
 
 
 
@@ -553,7 +592,7 @@ Summary: Thank you function
 @parms: None
 @return: None - Logs a closing message.
 */
-  function thankYou(){
+function thankYou(){
     alert('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anytime :]')
     console.log('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anytime :]');
 } // End of thank you function
@@ -584,6 +623,15 @@ Summary: Start of draw graph function
 @return: None - Renders the sine wave, points, and connection lines on the Canvas.
 */
 function drawGraph() {
+  //function var
+  let graphX, graphY;
+  let canvasX, canvasY;
+  let computerX, computerY;
+  let playerX, playerY;
+  //end of function var
+
+
+
   ctx.clearRect(0, 0, width, height);
 
   // Draw axes
@@ -598,22 +646,22 @@ function drawGraph() {
   // Draw sine wave
   ctx.beginPath();
   ctx.strokeStyle = "#402954";
-  for (let graphX = -Math.PI * 2; graphX <= Math.PI * 2; graphX += 0.01) {
-    const canvasX = (graphX + Math.PI * 2) * (width / (Math.PI * 4));
-    const canvasY = height / 2 - Math.sin(graphX) * 100;
+  for (graphX = -Math.PI * 2; graphX <= Math.PI * 2; graphX += 0.01) {
+    canvasX = (graphX + Math.PI * 2) * (width / (Math.PI * 4));
+    canvasY = height / 2 - Math.sin(graphX) * 100;
     if (graphX === -Math.PI * 2) {
       ctx.moveTo(canvasX, canvasY);
     } else {
       ctx.lineTo(canvasX, canvasY);
-    }
-  }
+    } // end of drawing sine wave if
+  } // end of drawing sine wave for loop
   ctx.stroke();
 
-  for (let choiceName in rpsAngles) {
-    const graphX = (rpsAngles[choiceName] + Math.PI * 2) * (width / (Math.PI * 4));
-    const graphY = height / 2 - Math.sin(rpsAngles[choiceName]) * 100;
+  for (choiceName in rpsAngles) {
+    graphX = (rpsAngles[choiceName] + Math.PI * 2) * (width / (Math.PI * 4));
+    graphY = height / 2 - Math.sin(rpsAngles[choiceName]) * 100;
     drawEmoji(graphX, graphY, rpsEmoji[choiceName], 20);
-  }
+  } // end of choosing emojis for loop
 
   // line connecting player and CPU
   if (
@@ -629,7 +677,7 @@ function drawGraph() {
       ctx.strokeStyle = "red";
     } else {
       ctx.strokeStyle = "gray";
-    }
+    } // end of colours if
 
     ctx.lineWidth = 3;
 
@@ -643,21 +691,21 @@ function drawGraph() {
     );
 
     ctx.stroke();
-  }
+  } // end of line connecting if
 
   // Draw CPU dot
   if (typeof computerChoiceTrig !== "undefined") {
-    const computerX = (computerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
-    const computerY = height / 2 - Math.sin(computerChoiceTrig) * graphAmplitude;
+    computerX = (computerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
+    computerY = height / 2 - Math.sin(computerChoiceTrig) * graphAmplitude;
     drawEmoji(computerX, computerY, "🤖", 28);
-  }
+  } // end of draw cpu if
 
   // Draw player dot
   if (typeof playerChoiceTrig !== "undefined") {
-    const playerX = (playerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
-    const playerY = height / 2 - Math.sin(playerChoiceTrig) * graphAmplitude;
+    playerX = (playerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
+    playerY = height / 2 - Math.sin(playerChoiceTrig) * graphAmplitude;
     drawEmoji(playerX, playerY, "🧑", 28);
-  }
+  } // end of player if
 } // End of draw graph function
 
 
@@ -675,7 +723,7 @@ function showMessage(messageText, keepInputVisible = false) {
   // Only hide inputArea if keepInputVisible is false
   if (!keepInputVisible) {
     inputArea.classList.add("hidden");
-  }
+  } // end of input area visibility if
 
   msgText.innerText = messageText;
   msgBox.classList.remove("hidden");
@@ -693,7 +741,7 @@ Summary: Initializes a new game round and starts the gameplay logic.
 function startRoundSession() {
   roundNumber = 1;
   updateRoundDisplay();
-  RPSGame();
+  askForChoice();
 } // end of start round session function
 
 
@@ -712,7 +760,7 @@ function updateRoundDisplay() {
   } else {
     roundText.innerText = "Round: Not Started";
     console.log(`Rounds reset.`);
-  }
+  } // end of updating round display if
 } // end of update round display function
 
 
@@ -725,8 +773,7 @@ Summary: Updates the UI text to reflect current game standings.
 @return: None
 */
 function updateScoreDisplay() {
-  scoreText.innerText = 
-    `Score -> You: ${gameScore.playerWin} | CPU: ${gameScore.computerWin} | Draws: ${gameScore.gameDraw}`;
+  scoreText.innerText = `Score -> You: ${gameScore.playerWin} | CPU: ${gameScore.computerWin} | Draws: ${gameScore.gameDraw}`;
 } // end of update score display function
 
 
@@ -741,7 +788,7 @@ Summary: Capitalize First Letter Function
 function capitalizeFirstLetter(text) { 
   if (!text) {
     return '';
-  }
+  } // end of not capitalizing if string is empty if
 
   return text.charAt(0).toUpperCase() + text.slice(1); 
 } // End of Capitalize First Letter Function
@@ -769,7 +816,7 @@ function userNameCollector() {
     userNameCapitalized = "Mr. Vatougios";
     alert('Username set to default.');
     console.log('Username set to default.');
-  } 
+  } // end of comfirming username if
   
   usernameElement = document.getElementById("username");
   usernameElement.innerHTML = userNameCapitalized;
@@ -790,6 +837,7 @@ function userNameCollector() {
 
 
 
+
 // username variables
 var userName = '';
 let usernameElement; // html element of username
@@ -798,8 +846,13 @@ let text; // text to capitalize
 
 // ask another question prompting
 let tryAgain;
+let confirmMessage;
+let continueRound;
 
 // html messages variables
+let pendingYesAction = null;
+let pendingNoAction = null;
+
 const msgBox = document.getElementById("messageBox");
 const msgText = document.getElementById("messageText");
 const inputArea = document.getElementById("inputArea");
@@ -815,11 +868,13 @@ let keepInputVisible;
 const userInput = document.getElementById("userInput");
 
 // game variables
+let userPlay;
 let playerChoice;
 let playerChoiceLowercase;
 let playerChoiceConverted;
 let playerChoiceConfirmation;
 
+let randomNumber;
 let computerChoice;
 let gameLog;
 
@@ -892,7 +947,7 @@ const ASCIITitle = String.raw`
 
 
 // Start of Main
-window.addEventListener("load", playRPS);
+window.addEventListener("load", playRPS); // playRPS is the master function that runs the entire program
 // End  of Main
 
 
@@ -951,6 +1006,6 @@ function resetRPSGame() {
   playerChoiceConverted = '';
   playerChoiceConfirmation = '';
   computerChoice = '';
-  RPSGame();
+  askForChoice();
 } // End of reset rock paper scissors function
 */
