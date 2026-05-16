@@ -133,16 +133,9 @@ Summary: Explanation rock paper scissors function
 @return: None - Displays game instructions via alerts and logs.
 */
 function explanationRPS() {
-  alert(
-    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`
-  );
-  console.log(
-    `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`
-  );
-  console.log(
-    '%cCome back any time you need a good game of rock paper scissors!',
-    "color: #3399FF"
-  );
+  alert(`The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`);
+  console.log(`The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`);
+  console.log('%cCome back any time you need a good game of rock paper scissors!', "color: #3399FF");
 } //End of explanation rock pa//r scissors function
 
 
