@@ -115,11 +115,11 @@ Summary: Intro rock paper scissors function
 @return: None - Logs stylized introduction text to the console.
 */
 function introRPS() {
-  alert(`Rock Paper Scissors is an ancient game. However, it is still valuable in our modern society. However, in our modern era it needs to evolve to keep up with the times. Therefore, Hasintbro is determined to bring this important game with us into the future.`);
+  alert(`Rock Paper Scissors is an ancient game. The core concept of the game dates back over 2,000 years to ancient China's Han Dynasty. However, it is still valuable in our modern society; although, it needs to evolve to keep up with the times. Hasintbro is determined to bring this important game with us into the future. Play this game against your very own computer right now, and test your luck and skill now.`);
   console.log('%cWelcome to sin(rock, paper, scissors).', 'color: turquoise; font-size: 30px');
   console.log('This is where all your games of rock paper scissors will become math!');
   console.log('%cIntroduction', 'color: turquoise; font-size: 25px');
-  console.log(`Rock Paper Scissors is an ancient game. However, it is still valuable in our modern society. However, in our modern era it needs to evolve to keep up with the times. Therefore, Hasintbro is determined to bring this important game with us into the future.`);
+  console.log(`Rock Paper Scissors is an ancient game. The core concept of the game dates back over 2,000 years to ancient China's Han Dynasty. However, it is still valuable in our modern society; although, it needs to evolve to keep up with the times. Hasintbro is determined to bring this important game with us into the future. Play this game against your very own computer right now, and test your luck and skill now.`);
   console.log('%cExplanation', 'color: turquoise; font-size: 25px');
 } //End of intro rock paper scissors function
 
@@ -133,8 +133,8 @@ Summary: Explanation rock paper scissors function
 @return: None - Displays game instructions via alerts and logs.
 */
 function explanationRPS() {
-  alert(`The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`);
-  console.log(`The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`);
+  alert(`The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock, paper, or scissors) when prompted to choose your play\n2. Confirm your play\n3. The computer will play and you will find out if you win, lose, or draw\n4. Continue the round or end it to see your final score and a graph display of the latest round (html version only)`);
+  console.log(`The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock, paper, or scissors) when prompted to choose your play\n2.Confirm your play\n3. The computer will play and you will find out if you win, lose, or draw\n4. Continue the round or end it to see your final score and a graph display of the latest round (html version only)`);
   console.log('%cCome back any time you need a good game of rock paper scissors!', "color: #3399FF");
 } //End of explanation rock pa//r scissors function
 
@@ -479,7 +479,7 @@ Summary: Game score log function
 @return: None - Logs the current scoreboard to the console.
 */
 function gameScoreLog() {
-  console.log(`-----\nFinal Score:\nYou: ${gameScore.playerWin}\nComputer: ${gameScore.computerWin}\nDraw: ${gameScore.gameDraw}\n-----`);
+  console.log(`-----\nScores:\nYou: ${gameScore.playerWin}\nComputer: ${gameScore.computerWin}\nDraw: ${gameScore.gameDraw}\n-----`);
 }//End of game score log function
 
 
