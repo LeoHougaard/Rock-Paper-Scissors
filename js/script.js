@@ -78,7 +78,7 @@ Summary: The show next button in each intro step function
 @return: none - changes next button and increments currentIntroStep
 */
 function showNextIntroStep() {
-  // function var
+  // Function variables
   const existingNextBtn = document.getElementById("nextBtn");
   const nextBtn = document.createElement("button");
 
@@ -86,7 +86,9 @@ function showNextIntroStep() {
 
   introSteps[currentIntroStep](); // Run current step
 
-  if (existingNextBtn) existingNextBtn.remove(); // Remove old Next button
+  if (existingNextBtn) {
+    existingNextBtn.remove(); // Remove old Next button
+  }
 
   // Only add "Next" button if not the last step
   if (currentIntroStep < introSteps.length - 1) {
@@ -194,7 +196,7 @@ function explanationRPS() {
 
 
 /*
-Summary: askes the user to enter a move
+Summary: Asks the user to enter a move.
 @parms: None
 @return: None
 */
@@ -202,13 +204,13 @@ function askForChoice() {
   showMessage("Type R, P, or S", true); // Show the message and keep input visible
 
   inputArea.classList.remove("hidden"); // Show the input field
-  userInput.valueRps = ''; // Clear previous input
+  userInput.value = ''; // Clear previous input
 
   // Attach submit button listener
   document.getElementById("submitChoice").onclick = function () {
-    const valueRps = userInput.valueRps;
+    const playerInput = userInput.value;
     inputArea.classList.add("hidden"); // hide after submission
-    userChoiceHandler(valueRps);          // process choice
+    userChoiceHandler(playerInput);          // process choice
   };
 } //End of ask for choice function
 
@@ -219,7 +221,7 @@ function askForPlay() {
   do {
       userPlay = prompt("Type R, P, or S");
       
-      if (userAge === null) {
+      if (userPlay === null) {
         if (confirm("Do you want to exit the round?")) {
           console.log("User has stopped playing.");
           return;
@@ -227,24 +229,19 @@ function askForPlay() {
           // auto re-prompts
         }
       }
-    } while((userAge === null) || (userAge.trim() === ""));
+    } while((userPlay === null) || (userPlay.trim() === ""));
 
   playHandler(userPlay);
 } //End of ask for choice function
 
 
 /*
-Summary: Validates age and sleep inputs, assigns recommended sleep based on age, and triggers sleep debt calculation
-@parms: ageInput (String — age entered by user), sleepInput (String — comma-separated sleep hours)
-@return: returns undefined early on failure; otherwise, initiates the next function
+Summary: Validates a prompt-based RPS choice and asks the user to confirm it.
+@parms: userPlay
+@return: String - Returns "quit" for cancelled input or "retry" for invalid input.
 */
 function playHandler(userPlay) {
-  // function var
-  // end of function var
-
-
-
-    // input validation
+  // Input validation
   if  (userPlay === null) {
     alert("User cancelled the prompt.");
     alert('Click "play" to try again.');
@@ -287,22 +284,22 @@ function playHandler(userPlay) {
     askForPlay();
   } else if (confirm("Do you want to re enter values?")) {
     console.log("User has cancelled the first prompt but decided to try again.");
-    askForSleep();
+    askForPlay();
   } else {
     console.log("User has canceled the prompt.");
     return;
   }
-} //End of sleepHandler funtion
+} //End of play handler function
 
 
 
 /*
-Summary: display a confermation of yes no
+Summary: Displays a yes or no confirmation message.
 @parms: confirmMessage, callbackYes, callbackNo, isFullMessage
 @return: None
 */
 function askYesNo(confirmMessage, callbackYes, callbackNo, isFullMessage = false) {
-  // function var
+  // Function variables
   const yesBtn = document.getElementById("yesBtn");
   const noBtn = document.getElementById("noBtn");
 
@@ -412,8 +409,8 @@ function userChoiceHandler(playerChoice) {
 
 /*
 Summary: Computer choice collector 
-@parms: var name or expression and datatyp
-@return: String - Returns "play", "retry", or "quit" based on user input and confirmations.
+@parms: None
+@return: None - Randomly chooses rock, paper, or scissors for the computer.
 */
 function computerChoiceCollector() {
   randomNumber = Math.floor(Math.random()*3);
@@ -483,7 +480,7 @@ function gameScoreLog() {
 
 /*
 Summary: You win function 
-@parms: var name or expression and datatype
+@parms: None
 @return: None - Displays the result message to the user.
 */
 function youWin() {
@@ -497,7 +494,7 @@ function youWin() {
 
 /*
 Summary: You draw function 
-@parms: var name or expression and datatype
+@parms: None
 @return: None - Displays the result message to the user.
 */
 function youDraw() {
@@ -511,7 +508,7 @@ function youDraw() {
 
 /*
 Summary: You lose function
-@parms: var name or expression and datatype
+@parms: None
 @return: None - Displays the result message to the user.
 */
 function youLose() {
@@ -524,9 +521,9 @@ function youLose() {
 
 
 /*
-Summary: You lose function
-@parms: var name or expression and datatype
-@return: None - Displays the result message to the user.
+Summary: Ends the current round, resets the score, and shows the play again option.
+@parms: None
+@return: None
 */
 function endRound() {
   thankYou(); // Call the thank you function
@@ -565,7 +562,7 @@ function endRound() {
 
 /*
 Summary: Thank you function 
-@parms: var name or expression and datatype
+@parms: None
 @return: None - Logs a closing message.
 */
   function thankYou(){
@@ -578,14 +575,14 @@ Summary: Thank you function
 
 /*
 Summary: Draw emoji function 
-@parms: var name or expression and datatype
+@parms: graphX, graphY, emoji, size
 @return: None - Draws a specific emoji to the HTML5 Canvas.
 */
-function drawEmoji(x, y, emoji, size = 24) {
-  ctx.graphFont = `${size}px serif`;
+function drawEmoji(graphX, graphY, emoji, size = 24) {
+  ctx.font = `${size}px serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(emoji, x, y);
+  ctx.fillText(emoji, graphX, graphY);
 } // End of draw emoji function
 
 
@@ -594,7 +591,7 @@ function drawEmoji(x, y, emoji, size = 24) {
 
 /*
 Summary: Start of draw graph function 
-@parms: var name or expression and datatyp
+@parms: None
 @return: None - Renders the sine wave, points, and connection lines on the Canvas.
 */
 function drawGraph() {
@@ -612,18 +609,21 @@ function drawGraph() {
   // Draw sine wave
   ctx.beginPath();
   ctx.strokeStyle = "#402954";
-  for (let x = -Math.PI * 2; x <= Math.PI * 2; x += 0.01) {
-    const canvasX = (x + Math.PI * 2) * (width / (Math.PI * 4));
-    const canvasY = height / 2 - Math.sin(x) * 100;
-    if (x === -Math.PI * 2) ctx.moveTo(canvasX, canvasY);
-    else ctx.lineTo(canvasX, canvasY);
+  for (let graphX = -Math.PI * 2; graphX <= Math.PI * 2; graphX += 0.01) {
+    const canvasX = (graphX + Math.PI * 2) * (width / (Math.PI * 4));
+    const canvasY = height / 2 - Math.sin(graphX) * 100;
+    if (graphX === -Math.PI * 2) {
+      ctx.moveTo(canvasX, canvasY);
+    } else {
+      ctx.lineTo(canvasX, canvasY);
+    }
   }
   ctx.stroke();
 
-  for (let key in rpsAngles) {
-    const x = (rpsAngles[key] + Math.PI * 2) * (width / (Math.PI * 4));
-    const y = height / 2 - Math.sin(rpsAngles[key]) * 100;
-    drawEmoji(x, y, rpsEmoji[key], 20);
+  for (let choiceName in rpsAngles) {
+    const graphX = (rpsAngles[choiceName] + Math.PI * 2) * (width / (Math.PI * 4));
+    const graphY = height / 2 - Math.sin(rpsAngles[choiceName]) * 100;
+    drawEmoji(graphX, graphY, rpsEmoji[choiceName], 20);
   }
 
   // line connecting player and CPU
@@ -634,9 +634,13 @@ function drawGraph() {
   ) {
     ctx.beginPath();
 
-    if (lastWinner === "player") ctx.strokeStyle = "green";
-    else if (lastWinner === "computer") ctx.strokeStyle = "red";
-    else ctx.strokeStyle = "gray";
+    if (lastWinner === "player") {
+      ctx.strokeStyle = "green";
+    } else if (lastWinner === "computer") {
+      ctx.strokeStyle = "red";
+    } else {
+      ctx.strokeStyle = "gray";
+    }
 
     ctx.lineWidth = 3;
 
@@ -654,16 +658,16 @@ function drawGraph() {
 
   // Draw CPU dot
   if (typeof computerChoiceTrig !== "undefined") {
-    const cx = (computerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
-    const cy = height / 2 - Math.sin(computerChoiceTrig) * graphAmplitude;
-    drawEmoji(cx, cy, "🤖", 28);
+    const computerX = (computerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
+    const computerY = height / 2 - Math.sin(computerChoiceTrig) * graphAmplitude;
+    drawEmoji(computerX, computerY, "🤖", 28);
   }
 
   // Draw player dot
   if (typeof playerChoiceTrig !== "undefined") {
-    const px = (playerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
-    const py = height / 2 - Math.sin(playerChoiceTrig) * graphAmplitude;
-    drawEmoji(px, py, "🧑", 28);
+    const playerX = (playerChoiceTrig + Math.PI * 2) * (width / (Math.PI * 4));
+    const playerY = height / 2 - Math.sin(playerChoiceTrig) * graphAmplitude;
+    drawEmoji(playerX, playerY, "🧑", 28);
   }
 } // End of draw graph function
 
@@ -679,7 +683,10 @@ Summary: Updates and displays a message box while managing UI visibility.
 function showMessage(messageText, keepInputVisible = false) {
   confirmArea.classList.add("hidden"); // hide confirm area
 
-  if (!keepInputVisible) inputArea.classList.add("hidden");   // Only hide inputArea if keepInputVisible is false
+  // Only hide inputArea if keepInputVisible is false
+  if (!keepInputVisible) {
+    inputArea.classList.add("hidden");
+  }
 
   msgText.innerText = messageText;
   msgBox.classList.remove("hidden");
@@ -715,7 +722,7 @@ function updateRoundDisplay() {
     console.log(`Round: ${roundNumber}`);
   } else {
     roundText.innerText = "Round: Not Started";
-    console.log(`Rounds reset.`)
+    console.log(`Rounds reset.`);
   }
 } // end of update round display function
 
@@ -739,12 +746,15 @@ function updateScoreDisplay() {
 
 /*
 Summary: Capitalize First Letter Function 
-@parms: str
+@parms: text
 @return: String - Returns the input string with the first character capitalized.
 */
-capitalizeFirstLetter = (str) => { 
-  if (!str) return ''; 
-  return str.charAt(0).toUpperCase() + str.slice(1); 
+function capitalizeFirstLetter(text) { 
+  if (!text) {
+    return '';
+  }
+
+  return text.charAt(0).toUpperCase() + text.slice(1); 
 } // End of Capitalize First Letter Function
 
 
@@ -804,7 +814,7 @@ let currentIntroStep = 0;
 var userName = '';
 let usernameElement; // html element of username
 let userNameCapitalized; // capitalized username
-let str; // to capitalize any string
+let text; // text to capitalize
 
 // ask another question prompting
 let tryAgain;
@@ -867,10 +877,6 @@ const rpsEmoji = {
   scissors: "✂️"
 };
 const graphAmplitude = 100;
-let graphFont;
-let textAlign
-let textBaseline;
-let strokeStyle;
 
 
 // ASCII art
