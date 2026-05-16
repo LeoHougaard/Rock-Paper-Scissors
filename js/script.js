@@ -54,6 +54,19 @@ function playRPS() {
   welcomeRPS();
   introRPS();
   explanationRPS();
+  chooseGameVersion();
+} //End of the play rock paper scissors function
+
+
+
+
+
+/*
+Summary: Lets the user choose whether to play in the console or HTML interface.
+@parms: none
+@return: None - Starts the selected game version.
+*/
+function chooseGameVersion() {
   if (confirm("Do you want to play the console version?")) {
     roundNumber = 1;
     updateRoundDisplay();
@@ -61,7 +74,7 @@ function playRPS() {
   } else {
     startRoundSession();
   }
-} //End of the play rock paper scissors function
+} // End of choose game version function
 
 
 
