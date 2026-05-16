@@ -54,8 +54,13 @@ function playRPS() {
   welcomeRPS();
   introRPS();
   explanationRPS();
-  askForChoiceConsole();
-  endRound();
+  if (confirm("Do you want to play the console version?")) {
+    roundNumber = 1;
+    updateRoundDisplay();
+    askForChoiceConsole();
+  } else {
+    startRoundSession();
+  }
 } //End of the play rock paper scissors function
 
 
@@ -167,7 +172,7 @@ function askForChoiceConsole() {
 
     } while((userPlay === null) || (userPlay.trim() === ""));
 
-  userChoiceHandlerConsole(userPlay);
+  return userChoiceHandlerConsole(userPlay);
 } //End of ask for choice function
 
 
@@ -249,13 +254,13 @@ function userChoiceHandlerConsole(userPlay) {
       roundNumber++;
       updateRoundDisplay(); 
 
-      askForChoiceConsole();
+      return askForChoiceConsole();
 
     } else {
       thankYou();
     }
   } else {
-    askForChoiceConsole();
+    return askForChoiceConsole();
   }
 } //End of play handler function
 
@@ -277,7 +282,7 @@ function userChoiceHandler(playerChoice) {
     return "quit";
   }
   
-  playerChoiceLowercase = playerChoice.toLowerCase();
+  playerChoiceLowercase = playerChoice.trim().toLowerCase();
   playerChoiceConverted = playerChoiceLowercase.charAt(0);
 
   switch (playerChoiceConverted) {
@@ -535,8 +540,8 @@ Summary: Thank you function
 @return: None - Logs a closing message.
 */
   function thankYou(){
-    alert('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anythime :]')
-    console.log('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anythime :]');
+    alert('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anytime :]')
+    console.log('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anytime :]');
 } // End of thank you function
 
 
