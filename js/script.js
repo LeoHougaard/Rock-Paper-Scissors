@@ -51,8 +51,11 @@ Summary: The play rock paper scissors function
 @return: None (Void) - This is the main entry point that resets the current intro step and plays the next button function
 */
 function playRPS() {
-  currentIntroStep = 0; // reset step index
-  showNextIntroStep();
+  welcomeRPS();
+  introRPS();
+  explanationRPS();
+  askForChoiceConsole();
+  endRound();
 } //End of the play rock paper scissors function
 
 
@@ -67,60 +70,6 @@ Summary: The rock paper scissors function
 function RPSGame() {
   askForChoice();
 } // End of rock paper scissors game function
-
-
-
-
-
-/*
-Summary: The show next button in each intro step function
-@parms: introsteps
-@return: none - changes next button and increments currentIntroStep
-*/
-function showNextIntroStep() {
-  // Function variables
-  const existingNextBtn = document.getElementById("nextBtn");
-  const nextBtn = document.createElement("button");
-
-
-
-  introSteps[currentIntroStep](); // Run current step
-
-  if (existingNextBtn) {
-    existingNextBtn.remove(); // Remove old Next button
-  }
-
-  // Only add "Next" button if not the last step
-  if (currentIntroStep < introSteps.length - 1) {
-    nextBtn.id = "nextBtn";
-    nextBtn.textContent = "Next";
-    nextBtn.addEventListener("click", () => {
-      currentIntroStep++;
-      showNextIntroStep();
-    });
-    msgBox.appendChild(nextBtn); // append inside messageBox
-  }
-} //End of show intro step function
-
-
-
-
-
-/*
-Summary: manages the transition to the fourth step of an introductory sequence
-@parms: none
-@return: none - runs startRoundSession()
-*/
-function introStepFour() {
-    msgBox.classList.add("hidden"); // hide explanation from prev step
-    playUI.classList.remove("hidden"); // remove hidden class 
-
-    // Play button click
-    document.getElementById("playBtn").onclick = () => {
-        playUI.style.display = "none"; // Hide the intro UI
-        startRoundSession();
-    };
-} //End of intro step four function
 
 
 
@@ -146,7 +95,7 @@ Summary: The welcome rock paper scissors function
 */
 function welcomeRPS() {
   userNameCollector();
-  showMessage(`Welcome to the Hasintbro Rock Paper Scissors.`);
+  alert(`Hi ${userNameCapitalized}! Welcome to the Hasintbro Rock Paper Scissors.`);
   console.log(`Hi ${userNameCapitalized}!`);
   titleRPS();
 } //End of welcome rock paper scissors function
@@ -161,7 +110,7 @@ Summary: Intro rock paper scissors function
 @return: None - Logs stylized introduction text to the console.
 */
 function introRPS() {
-  showMessage(`Rock Paper Scissors is an ancient game. However, it is still valuable in our modern society. However, in our modern era it needs to evolve to keep up with the times. Therefore, Hasintbro is determined to bring this important game with us into the future.`);
+  alert(`Rock Paper Scissors is an ancient game. However, it is still valuable in our modern society. However, in our modern era it needs to evolve to keep up with the times. Therefore, Hasintbro is determined to bring this important game with us into the future.`);
   console.log('%cWelcome to sin(rock, paper, scissors).', 'color: turquoise; font-size: 30px');
   console.log('This is where all your games of rock paper scissors will become math!');
   console.log('%cIntroduction', 'color: turquoise; font-size: 25px');
@@ -179,7 +128,7 @@ Summary: Explanation rock paper scissors function
 @return: None - Displays game instructions via alerts and logs.
 */
 function explanationRPS() {
-  showMessage(
+  alert(
     `The math will resolve all your competitions.\n\nHow to play RPS:\n1. Enter r, p, or s (rock paper or scissors) when prompted to choose your play\n2. The computer will play and you will find out if you win, lose, or draw\n3. Continue the round or end it to see your final score`
   );
   console.log(
@@ -196,7 +145,37 @@ function explanationRPS() {
 
 
 /*
-Summary: Asks the user to enter a move.
+Summary: Asks the user to enter a move (prompt version).
+@parms: None
+@return: None
+*/
+function askForChoiceConsole() {
+  do {
+      userPlay = prompt("Type R, P, or S");
+      
+      // esc/cancel handling
+      if (userPlay === null) {
+        if (confirm("Do you want to exit the round?")) {
+          console.log("User has stopped playing.");
+          return;
+        } else {
+          continue;
+        }
+      }
+
+      playerChoiceLowercase = userPlay.trim().toLowerCase();
+
+    } while((userPlay === null) || (userPlay.trim() === ""));
+
+  userChoiceHandlerConsole(userPlay);
+} //End of ask for choice function
+
+
+
+
+
+/*
+Summary: Asks the user to enter a move (html).
 @parms: None
 @return: None
 */
@@ -217,22 +196,6 @@ function askForChoice() {
 
 
 
-function askForPlay() {
-  do {
-      userPlay = prompt("Type R, P, or S");
-      
-      if (userPlay === null) {
-        if (confirm("Do you want to exit the round?")) {
-          console.log("User has stopped playing.");
-          return;
-        } else {
-          // auto re-prompts
-        }
-      }
-    } while((userPlay === null) || (userPlay.trim() === ""));
-
-  playHandler(userPlay);
-} //End of ask for choice function
 
 
 /*
@@ -240,17 +203,8 @@ Summary: Validates a prompt-based RPS choice and asks the user to confirm it.
 @parms: userPlay
 @return: String - Returns "quit" for cancelled input or "retry" for invalid input.
 */
-function playHandler(userPlay) {
-  // Input validation
-  if  (userPlay === null) {
-    alert("User cancelled the prompt.");
-    alert('Click "play" to try again.');
-    console.log("User cancelled the prompt.");
-    console.log('Click "play" to try again.');
-    return "quit";
-  }
-  
-  playerChoiceLowercase = userPlay.toLowerCase();
+function userChoiceHandlerConsole(userPlay) {
+
   playerChoiceConverted = playerChoiceLowercase.charAt(0);
 
   switch (playerChoiceConverted) {
@@ -274,55 +228,36 @@ function playHandler(userPlay) {
       console.log("Pick rock paper or scissors.");
       alert("That's not a legal play.");
       alert("Pick rock paper or scissors.");
-      askForPlay()
-      return "retry";
+      askForChoiceConsole();
+      return;
   } // end of input validation
 
-  confirmMessage =`Did you want to play ${playerChoiceConverted}?`;
-  console.log(`You chose ${playerChoiceConverted}`);
+  confirmMessage = `Did you want to play ${playerChoiceConfirmation}?`;
+
   if (confirm(confirmMessage)) {
-    askForPlay();
-  } else if (confirm("Do you want to re enter values?")) {
-    console.log("User has cancelled the first prompt but decided to try again.");
-    askForPlay();
+
+    console.log(`You chose ${playerChoiceConfirmation}`);
+    computerChoiceCollector();
+    whatHappened();
+    lastWinner = normalDetermineWinner();
+    gameScoreLog();
+
+    continueRound = confirm("Do you want to continue the round?");
+
+    if (continueRound) {
+
+      roundNumber++;
+      updateRoundDisplay(); 
+
+      askForChoiceConsole();
+
+    } else {
+      thankYou();
+    }
   } else {
-    console.log("User has canceled the prompt.");
-    return;
+    askForChoiceConsole();
   }
 } //End of play handler function
-
-
-
-/*
-Summary: Displays a yes or no confirmation message.
-@parms: confirmMessage, callbackYes, callbackNo, isFullMessage
-@return: None
-*/
-function askYesNo(confirmMessage, callbackYes, callbackNo, isFullMessage = false) {
-  // Function variables
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn = document.getElementById("noBtn");
-
-
-
-  confirmText.innerText = isFullMessage ? confirmMessage : `Do you want to play "${confirmMessage}"?`;   // If isFullMessage is true, use the message as-is. Otherwise, prepend "Do you want to play"
-
-  confirmArea.classList.remove("hidden");
-
-  yesBtn.onclick = null;
-  noBtn.onclick = null;
-
-  yesBtn.onclick = () => {
-      confirmArea.classList.add("hidden");
-      callbackYes();
-  };
-
-  noBtn.onclick = () => {
-      confirmArea.classList.add("hidden");
-      callbackNo();
-  };
-} // end of function
-
 
 
 
@@ -406,6 +341,37 @@ function userChoiceHandler(playerChoice) {
 
 
 
+/*
+Summary: Displays a yes or no confirmation message.
+@parms: confirmMessage, callbackYes, callbackNo, isFullMessage
+@return: None
+*/
+function askYesNo(confirmMessage, callbackYes, callbackNo, isFullMessage = false) {
+  // Function variables
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+
+
+
+  confirmText.innerText = isFullMessage ? confirmMessage : `Do you want to play "${confirmMessage}"?`;   // If isFullMessage is true, use the message as-is. Otherwise, prepend "Do you want to play"
+
+  confirmArea.classList.remove("hidden");
+
+  yesBtn.onclick = null;
+  noBtn.onclick = null;
+
+  yesBtn.onclick = () => {
+      confirmArea.classList.add("hidden");
+      callbackYes();
+  };
+
+  noBtn.onclick = () => {
+      confirmArea.classList.add("hidden");
+      callbackNo();
+  };
+} // end of function
+
+
 
 /*
 Summary: Computer choice collector 
@@ -484,6 +450,7 @@ Summary: You win function
 @return: None - Displays the result message to the user.
 */
 function youWin() {
+  alert(`${gameLog}\n\nCongrats you win!`);
   showMessage(`${gameLog}\n\nCongrats you win!`);
   console.log('we have a winner!');
 } //End of you win function
@@ -498,6 +465,7 @@ Summary: You draw function
 @return: None - Displays the result message to the user.
 */
 function youDraw() {
+  alert(`${gameLog}\n\nyou draw, go do some drawing`);
   showMessage(`${gameLog}\n\nyou draw, go do some drawing`);
   console.log('we have... a draw');
 } //End of you draw function
@@ -512,6 +480,7 @@ Summary: You lose function
 @return: None - Displays the result message to the user.
 */
 function youLose() {
+  alert(`${gameLog}\n\nloser`);
   showMessage(`${gameLog}\n\nloser`);
   console.log('we have a loser...');
 } // End of you lose function
@@ -566,7 +535,8 @@ Summary: Thank you function
 @return: None - Logs a closing message.
 */
   function thankYou(){
-    console.log('Thank you for visiting and playing a round of Hasintbro RPS');
+    alert('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anythime :]')
+    console.log('Thank you for visiting and playing a round of Hasintbro RPS! Please come play again anythime :]');
 } // End of thank you function
 
 
@@ -800,15 +770,6 @@ function userNameCollector() {
 
 
 
-// intro variables
-const playUI = document.getElementById("introStepFourUI");
-let introSteps = [
-  welcomeRPS,
-  introRPS,
-  explanationRPS,
-  introStepFour 
-];
-let currentIntroStep = 0;
 
 // username variables
 var userName = '';
